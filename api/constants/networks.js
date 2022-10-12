@@ -15,7 +15,7 @@ const LIVE_NETWORKS = [
 
 const TEST_NETWORKS = [
   {
-    id: 'westend2',
+    id: 'westend',
     name: 'Westend',
     url: 'wss://westend-rpc.polkadot.io',
   },
@@ -50,11 +50,11 @@ const LOCAL_NETWORKS = [
 ];
 
 const DEV_NETWORKS = [
-  {
-    id: 'docker-local',
-    name: 'Docker Node Local',
-    url: 'ws://polkadot_local_node:9944',
-  },
+  // {
+  //   id: 'docker-local',
+  //   name: 'Docker Node Local',
+  //   url: 'ws://polkadot_local_node:9944',
+  // },
   // {
   //   id: 'docker-westend',
   //   name: 'Docker Node Westend',
@@ -68,7 +68,7 @@ const DEV_NETWORKS = [
 ];
 
 const CUSTOM_NETWORKS = [
-  {
+/*   {
     id: 'polkadot-custom',
     name: 'Polkadot Custom',
     url: 'ws://polkadot-polkadot-custom-node:9944',
@@ -77,7 +77,7 @@ const CUSTOM_NETWORKS = [
     id: 'westend2-custom',
     name: 'Westend Custom',
     url: 'ws://polkadot-westend-custom-node:9944',
-  },
+  }, */
 ];
 
 /**
