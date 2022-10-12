@@ -11,7 +11,8 @@ const PolkadotService = require('./services/polkadot');
 
 const app = express();
 const appLogger = pinoHttp({ logger });
-
+const cors = require('cors');
+app.use(cors())
 app.use(appLogger);
 app.use(API_BASE_PATH, routes);
 
