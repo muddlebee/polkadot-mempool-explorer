@@ -43,7 +43,7 @@
     "plugin:import/typescript"
   ],
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": 0,
     "react/prop-types": "off",
     "no-console": [
       "warn",

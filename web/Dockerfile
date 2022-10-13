@@ -4,8 +4,10 @@ FROM node:14-alpine
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-
 COPY . .
+# overwrite .env file from .env.docker
+COPY .env.docker ./.env
+
 
 RUN npm install
 
