@@ -80,6 +80,7 @@ class PolkadotService {
         let options = { provider };
         let api = await ApiPromise.create(options);
         const { methods } = await api.rpc.rpc.methods();
+        logger.info(`IRPC methods called: ${methods}`);
 
         customMethodKeys.forEach((methodKey) => {
           if (methods.includes(methodKey)) {

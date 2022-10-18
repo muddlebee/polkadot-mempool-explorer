@@ -18,6 +18,15 @@ const lruCache = lru();
 const lock = localLock();
 
 class CacheService {
+
+   /**
+    * gets initiated during server startup and updates data in lru-cache returned from
+    * api.rpc.author.pendingExtrinsics
+    * 
+    * 
+    * @param {*} data 
+    * @returns 
+    */
   static async upsertExtrinsic(data = {}) {
     const { hash, from, nonce, networkId } = data;
 
@@ -52,6 +61,9 @@ class CacheService {
         if (extrinsicKeys.length + 1 > NETWORK_MAX_ITEMS) {
           // Remove last element from cache
           // pop() method removes the last element from an array and returns that element.
+
+          //TODO: improve below logic and delete older entries which are not returned by the pending extrinsics API
+
           lruCache.del(extrinsicKeys.pop());
         }
 

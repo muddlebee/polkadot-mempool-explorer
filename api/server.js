@@ -22,8 +22,12 @@ app.use(API_BASE_PATH, routes);
 http.createServer(app).listen(PORT, () => {
   logger.info(`App listening on port http://localhost:${PORT}/`);
 
-  // Init all watchers
-  PolkadotService.initWatchers()
+
+/**  
+ *  initiate the api.rpc.author.pendingExtrinsics API and put into lru-cache
+ */ 
+
+PolkadotService.initWatchers()
     .then(() => {
       logger.info('All watchers started');
     })

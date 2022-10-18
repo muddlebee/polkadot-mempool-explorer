@@ -13,6 +13,6 @@ const { CACHE_MAX_AGE, CACHE_MAX_SIZE } = require('../../../env');
 module.exports = (max, maxAge) =>
   new LRU({
     max: max || CACHE_MAX_SIZE,
-    maxAge: maxAge || CACHE_MAX_AGE,
-    updateAgeOnGet: true,
+    ttl: maxAge || CACHE_MAX_AGE,
+    ttlAutopurge: true,
   });
