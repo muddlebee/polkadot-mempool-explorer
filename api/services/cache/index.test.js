@@ -30,7 +30,7 @@ describe('CacheService', () => {
     const extrinsicKeys = [];
 
     pendingExtrinsicsRawData.forEach((extrinsic) => {
-      const extrinsicKey = CacheService.getExtrinsicKey(
+      const extrinsicKey = CacheService.generateExtrinsicKey(
         networkId,
         extrinsic.hash,
         extrinsic.from,
@@ -42,7 +42,7 @@ describe('CacheService', () => {
     });
 
     lru.set(
-      CacheService.getNetworkKey(networkId),
+      CacheService.generateNetworkKey(networkId),
       JSON.stringify(extrinsicKeys)
     );
 
@@ -64,21 +64,21 @@ describe('CacheService', () => {
   });
 
   it('should return a valid network key', async () => {
-    const networkKey = CacheService.getNetworkKey(networkId);
+    const networkKey = CacheService.generateNetworkKey(networkId);
 
     expect(networkKey).to.equal(`network.id-${networkId}.key`);
   });
 
   it('should return a valid token symbol key', async () => {
-    const networkKey = CacheService.getNetworkKey(networkId);
+    const networkKey = CacheService.generateNetworkKey(networkId);
     const tokenSymbolKey = CacheService.getTokenSymbolKey(networkId);
 
     expect(tokenSymbolKey).to.equal(`${networkKey}.token-symbol`);
   });
 
   it('should return a valid extrinsic key', async () => {
-    const networkKey = CacheService.getNetworkKey(networkId);
-    const extrinsicKey = CacheService.getExtrinsicKey(
+    const networkKey = CacheService.generateNetworkKey(networkId);
+    const extrinsicKey = CacheService.generateExtrinsicKey(
       networkId,
       defaultHash,
       BOB,
@@ -90,33 +90,33 @@ describe('CacheService', () => {
     );
   });
 
-  it('should throw an error if networkId is not provided to getExtrinsicKey method', async () => {
+  it('should throw an error if networkId is not provided to generateExtrinsicKey method', async () => {
     try {
-      CacheService.getExtrinsicKey();
+      CacheService.generateExtrinsicKey();
     } catch (err) {
       expect(err).to.exist;
     }
   });
 
-  it('should throw an error if hash is not provided to getExtrinsicKey method', async () => {
+  it('should throw an error if hash is not provided to generateExtrinsicKey method', async () => {
     try {
-      CacheService.getExtrinsicKey(networkId);
+      CacheService.generateExtrinsicKey(networkId);
     } catch (err) {
       expect(err).to.exist;
     }
   });
 
-  it('should throw an error if from is not provided to getExtrinsicKey method', async () => {
+  it('should throw an error if from is not provided to generateExtrinsicKey method', async () => {
     try {
-      CacheService.getExtrinsicKey(networkId, defaultHash);
+      CacheService.generateExtrinsicKey(networkId, defaultHash);
     } catch (err) {
       expect(err).to.exist;
     }
   });
 
-  it('should throw an error if nonce is not provided to getExtrinsicKey method', async () => {
+  it('should throw an error if nonce is not provided to generateExtrinsicKey method', async () => {
     try {
-      CacheService.getExtrinsicKey(networkId, defaultHash, BOB);
+      CacheService.generateExtrinsicKey(networkId, defaultHash, BOB);
     } catch (err) {
       expect(err).to.exist;
     }
@@ -161,7 +161,7 @@ describe('CacheService', () => {
     await CacheService.setNetworkExtrinsicKeys(networkId, extrinsicKeys);
 
     const cacheValue = JSON.parse(
-      lru.get(CacheService.getNetworkKey(networkId))
+      lru.get(CacheService.generateNetworkKey(networkId))
     );
 
     expect(cacheValue).to.be.an('array').that.include.members(extrinsicKeys);
@@ -179,7 +179,7 @@ describe('CacheService', () => {
     );
 
     const cacheValue = JSON.parse(
-      lru.get(CacheService.getExtrinsicKey(networkId, hash, from, nonce))
+      lru.get(CacheService.generateExtrinsicKey(networkId, hash, from, nonce))
     );
 
     expect(cacheValue)
@@ -194,7 +194,7 @@ describe('CacheService', () => {
     );
     const expectedNetworkExtrinsicKeys = pendingExtrinsicsRawData.map(
       (extrinsic) =>
-        CacheService.getExtrinsicKey(
+        CacheService.generateExtrinsicKey(
           networkId,
           extrinsic.hash,
           extrinsic.from,

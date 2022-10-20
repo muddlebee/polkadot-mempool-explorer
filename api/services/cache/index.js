@@ -39,7 +39,7 @@ class CacheService {
         extrinsicKeys.reverse();
       }
 
-      const extrinsicKey = CacheService.getExtrinsicKey(
+      const extrinsicKey = CacheService.generateExtrinsicKey(
         networkId,
         hash,
         from,
@@ -136,7 +136,7 @@ class CacheService {
   }
 
   static async getExtrinsic(hash, from, nonce, networkId) {
-    const extrinsicKey = CacheService.getExtrinsicKey(
+    const extrinsicKey = CacheService.generateExtrinsicKey(
       networkId,
       hash,
       from,
@@ -147,7 +147,7 @@ class CacheService {
   }
 
   static async getNetworkExtrinsicKeys(networkId) {
-    const networkKey = CacheService.getNetworkKey(networkId);
+    const networkKey = CacheService.generateNetworkKey(networkId);
 
     return JSON.parse(lruCache.get(networkKey) || null) || [];
   }
@@ -164,7 +164,7 @@ class CacheService {
    * @param {*} data 
    */
   static async setExtrinsic(hash, from, nonce, networkId, data) {
-    const extrinsicKey = CacheService.getExtrinsicKey(
+    const extrinsicKey = CacheService.generateExtrinsicKey(
       networkId,
       hash,
       from,
@@ -175,7 +175,8 @@ class CacheService {
   }
 
   static async setNetworkExtrinsicKeys(networkId, data) {
-    const networkKey = CacheService.getNetworkKey(networkId);
+
+    const networkKey = CacheService.generateNetworkKey(networkId);
 
     lruCache.set(networkKey, JSON.stringify(data));
   }
@@ -205,24 +206,36 @@ class CacheService {
     return lruCache.get(tokenSymbolKey);
   }
 
-  static getExtrinsicKey(networkId, hash, from, nonce) {
+  /**
+   * extrinsicKey is formed with a combination of 
+   * hash, from, nonce and networkId 
+   * in order to save an extrinsic data
+   * 
+   * @param {*} networkId 
+   * @param {*} hash 
+   * @param {*} from 
+   * @param {*} nonce 
+   * @returns 
+   */
+  static generateExtrinsicKey(networkId, hash, from, nonce) {
     if (!hash || !from || !Number.isInteger(nonce) || !networkId) {
       throw new Error(
         'You must provide a hash, from, nonce and networkId in order to save an extrinsic'
       );
     }
 
-    return `${CacheService.getNetworkKey(
+    //TODO: why hash,nonce,key
+    return `${CacheService.generateNetworkKey(
       networkId
     )}.extrinsic.hash-${hash}.from-${from}.nonce-${nonce}.key`;
   }
 
-  static getNetworkKey(networkId) {
+  static generateNetworkKey(networkId) {
     return `network.id-${networkId}.key`;
   }
 
   static getTokenSymbolKey(networkId) {
-    return `${CacheService.getNetworkKey(networkId)}.token-symbol`;
+    return `${CacheService.generateNetworkKey(networkId)}.token-symbol`;
   }
 }
 
