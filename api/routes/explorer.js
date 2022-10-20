@@ -50,7 +50,7 @@ router.get('/transactions/:networkId', async (req, res) => {
   try {
     const networkId = req.params.networkId || '';
 
-    const extrinsics = await CacheService.getExtrinsics(networkId);
+    const extrinsics = await CacheService.getExtrinsicsInfo(networkId);
     const response = extrinsics.map((extrinsic) => {
       let type = '';
 

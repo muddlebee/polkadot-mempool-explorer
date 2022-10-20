@@ -233,7 +233,7 @@ describe('CacheService', () => {
         return 0;
       }
     );
-    const extrinsics = await CacheService.getExtrinsics(networkId);
+    const extrinsics = await CacheService.getExtrinsicsInfo(networkId);
 
     expect(extrinsics)
       .to.be.an('array')
@@ -249,7 +249,7 @@ describe('CacheService', () => {
     ];
 
     await CacheService.setNetworkExtrinsicKeys(networkId, invalidExtrinsicKeys);
-    const extrinsics = await CacheService.getExtrinsics(networkId);
+    const extrinsics = await CacheService.getExtrinsicsInfo(networkId);
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.be.empty;
@@ -258,7 +258,7 @@ describe('CacheService', () => {
   });
 
   it('should returns an empty extrinsic list by networkId', async () => {
-    const extrinsics = await CacheService.getExtrinsics(`empty-${networkId}`);
+    const extrinsics = await CacheService.getExtrinsicsInfo(`empty-${networkId}`);
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.be.empty;
@@ -269,7 +269,7 @@ describe('CacheService', () => {
     // reset the lru cache before store the pending extrinsics
     resetCache();
 
-    let extrinsics = await CacheService.getExtrinsics(networkId);
+    let extrinsics = await CacheService.getExtrinsicsInfo(networkId);
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.be.empty;
@@ -298,7 +298,7 @@ describe('CacheService', () => {
 
     await Promise.all(promises);
 
-    extrinsics = await CacheService.getExtrinsics(networkId);
+    extrinsics = await CacheService.getExtrinsicsInfo(networkId);
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.have.lengthOf(pendingExtrinsicsRawDataLength);

@@ -93,7 +93,7 @@ class CacheService {
     }
   }
 
-  static async getExtrinsics(networkId) {
+  static async getExtrinsicsInfo(networkId) {
     const extrinsicKeys = await CacheService.getNetworkExtrinsicKeys(networkId);
 
     if (extrinsicKeys.length > 0) {
@@ -182,7 +182,7 @@ class CacheService {
   }
 
   static async getPendingExtrinsicHashes(networkId) {
-    const extrinsics = await CacheService.getExtrinsics(networkId);
+    const extrinsics = await CacheService.getExtrinsicsInfo(networkId);
     const hashes = [];
 
     extrinsics.forEach((extrinsic) => {
