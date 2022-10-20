@@ -188,10 +188,13 @@ class PolkadotService {
             networkId
           );
 
+
+          //TODO: understand and document watchNewHeads
           if (!hasTrackExtrinsicMethod) {
             await PolkadotService.watchNewHeads(networkId);
           }
 
+          //TODO: proper balance for different extrinsics types
           const unsub = setInterval(async () => {
             await api.rpc.author.pendingExtrinsics(async (extrinsics) => {
               if (extrinsics.length > 0) {
@@ -200,6 +203,7 @@ class PolkadotService {
                 logger.info(
                   `${extrinsics.length} pending extrinsics in network ${networkId}.`
                 );
+          //      logger.info(`watchPendingExtrinsics: ${JSON.stringify(extrinsics)}`);
 
                 extrinsics.forEach((extrinsic) => {
                   const hash = extrinsic.hash.toString();
@@ -212,6 +216,7 @@ class PolkadotService {
                   let era = { isMortal: false };
 
                   // Start to track transaction life cycle
+                  // TODO: ignore the below block
                   if (hasTrackExtrinsicMethod) {
                     PolkadotService.trackExtrinsic(
                       networkId,
@@ -224,9 +229,10 @@ class PolkadotService {
                   extrinsic.args.forEach((arg) => {
                     if (arg.toRawType().includes('AccountId')) {
                       to = arg.toString();
-                    } else if (arg.toRawType().includes('Compact<Balance>')) {
+                    } 
+                    /* else if (arg.toRawType().includes('Compact<Balance>')) {
                       [value, symbol] = arg.toHuman().split(' ');
-                    }
+                    } */
                   });
 
                   if (extrinsic.era.isMortalEra) {
@@ -284,12 +290,15 @@ class PolkadotService {
   }
 
   /**
+   *   check if the block is finalized or included in the block
+   *
    *
    * @param {*} networkId
    * @param {*} hash
    * @param {*} from
    * @param {*} nonce
    */
+  //TODO:doc understand the below API
   static async trackExtrinsic(networkId, hash, from, nonce) {
     const api = await PolkadotService.connect(networkId);
     const extrinsic = await CacheService.getExtrinsic(
@@ -329,6 +338,9 @@ class PolkadotService {
             success: !isInvalid, // The transaction is valid in the current state.
             dropped: isDropped, // The transaction has been dropped from the pool,
           };
+
+
+          logger.info(`trackExtrinsic: ${JSON.toString(data)}`);
 
           // The transaction has been included in block
           if (isInBlock) {
@@ -388,7 +400,19 @@ class PolkadotService {
   }
 
   /**
-   *
+   * method to update extrinsic events as method,section and transactional data info
+   * 
+   *       "events": [
+                    {
+                        "method": "balances",
+                        "section": "Withdraw",
+                        "data": {
+                            "who": "1qnJN7FViy3HZaxZK9tGAA71zxHSBeUweirKqCaox4t8GT7",
+                            "amount": "161,681,946"
+                        }
+                    },
+
+
    * @param {*} networkId
    * @param {*} hash
    * @param {*} from

@@ -64,7 +64,7 @@ class CacheService {
 
           //TODO: improve below logic and delete older entries which are not returned by the pending extrinsics API
 
-          lruCache.del(extrinsicKeys.pop());
+          lruCache.delete(extrinsicKeys.pop());
         }
 
         extrinsicKeys.push(extrinsicKey);
@@ -152,6 +152,17 @@ class CacheService {
     return JSON.parse(lruCache.get(networkKey) || null) || [];
   }
 
+  /**
+   * set lru-cache
+   * key -> extrinsicKey
+   * value -> data
+   * 
+   * @param {*} hash 
+   * @param {*} from 
+   * @param {*} nonce 
+   * @param {*} networkId 
+   * @param {*} data 
+   */
   static async setExtrinsic(hash, from, nonce, networkId, data) {
     const extrinsicKey = CacheService.getExtrinsicKey(
       networkId,

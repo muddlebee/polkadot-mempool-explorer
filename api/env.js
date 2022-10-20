@@ -13,7 +13,7 @@ module.exports = {
   PRODUCTION,
   DEVELOPMENT: variables.NODE_ENV === 'development',
   TEST: variables.NODE_ENV === 'test',
-  PORT: variables.PORT || 9081,
+  PORT: variables.PORT || 8081,
   LOG_NAME: variables.LOG_NAME || 'mempool-explorer-service',
   LOG_LEVEL: PRODUCTION ? 'info' : 'debug',
   PRETTY_PRINT: !PRODUCTION,
