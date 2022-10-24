@@ -140,17 +140,10 @@ class PolkadotService {
    * @param {*} networkId
    */
   static async resetWatchPendingExtrinsics(networkId) {
-    const hasTrackExtrinsicMethod = PolkadotService.hasTrackExtrinsicMethod(
-      networkId
-    );
 
-    PolkadotService.unSubscribeWatchers(networkId);
-
-    if (!hasTrackExtrinsicMethod) {
-      await PolkadotService.watchNewHeads(networkId);
-    }
-
-    return PolkadotService.watchPendingExtrinsics(networkId);
+      PolkadotService.unSubscribeWatchers(networkId);
+      await PolkadotService.updateCachedEventsAndExtrinsicsInfo(networkId);
+      return PolkadotService.watchPendingExtrinsics(networkId);
   }
 
   static unSubscribeWatchers(networkId) {
@@ -182,19 +175,13 @@ class PolkadotService {
         if (api) {
           // Wait until we are ready and connected
           await api.isReady;
+          logger.info(`watchPendingExtrinsics api: ${JSON.stringify(api.rpc.author.trackExtrinsic)}`);
 
           const tokenSymbol = await CacheService.getTokenSymbol(networkId);
-          const hasTrackExtrinsicMethod = PolkadotService.hasTrackExtrinsicMethod(
-            networkId
-          );
 
+          //update extrinsics info in cache
+          await PolkadotService.updateCachedEventsAndExtrinsicsInfo(networkId);
 
-          //TODO: understand and document watchNewHeads
-          if (!hasTrackExtrinsicMethod) {
-            await PolkadotService.watchNewHeads(networkId);
-          }
-
-          //TODO: proper balance for different extrinsics types
           const unsub = setInterval(async () => {
             await api.rpc.author.pendingExtrinsics(async (extrinsics) => {
               if (extrinsics.length > 0) {
@@ -203,7 +190,6 @@ class PolkadotService {
                 logger.info(
                   `${extrinsics.length} pending extrinsics in network ${networkId}.`
                 );
-          //      logger.info(`watchPendingExtrinsics: ${JSON.stringify(extrinsics)}`);
 
                 extrinsics.forEach((extrinsic) => {
                   const hash = extrinsic.hash.toString();
@@ -214,18 +200,7 @@ class PolkadotService {
                   let value = 0;
                   let symbol = tokenSymbol;
                   let era = { isMortal: false };
-
-                  // Start to track transaction life cycle
-                  // TODO: ignore the below block
-                  if (hasTrackExtrinsicMethod) {
-                    PolkadotService.trackExtrinsic(
-                      networkId,
-                      hash,
-                      from,
-                      nonce
-                    );
-                  }
-
+                
                   extrinsic.args.forEach((arg) => {
                     if (arg.toRawType().includes('AccountId')) {
                       to = arg.toString();
@@ -268,7 +243,7 @@ class PolkadotService {
                 try {
                   // Save extrinsics
                   await Promise.all(
-                    rows.map((row) => CacheService.upsertExtrinsic(row))
+                    rows.map((row) => CacheService.updateCachedExtrinsics(row))
                   );
                 } catch (err) {
                   logger.error({ err }, 'Error trying to store extrinsis');
@@ -298,7 +273,7 @@ class PolkadotService {
    * @param {*} from
    * @param {*} nonce
    */
-  //TODO:doc understand the below API
+  //OLD: remove track extrinsic custom RPC
   static async trackExtrinsic(networkId, hash, from, nonce) {
     const api = await PolkadotService.connect(networkId);
     const extrinsic = await CacheService.getExtrinsic(
@@ -310,7 +285,7 @@ class PolkadotService {
     const IsTracked = extrinsic ? extrinsic.tracked : false;
 
     if (!IsTracked) {
-      await CacheService.upsertExtrinsic({
+      await CacheService.updateCachedExtrinsics({
         hash,
         from,
         nonce,
@@ -393,32 +368,22 @@ class PolkadotService {
           data.updateAt = Date.now();
 
           // Update extrinsic state
-          CacheService.upsertExtrinsic(data);
+          CacheService.updateCachedExtrinsics(data);
         }
       );
     }
   }
 
   /**
-   * method to update extrinsic events as method,section and transactional data info
+   * method to update extrinsic events/info in cache as method,section and transactional data info
+   * https://polkadot.js.org/docs/api/cookbook/blocks
    * 
-   *       "events": [
-                    {
-                        "method": "balances",
-                        "section": "Withdraw",
-                        "data": {
-                            "who": "1qnJN7FViy3HZaxZK9tGAA71zxHSBeUweirKqCaox4t8GT7",
-                            "amount": "161,681,946"
-                        }
-                    },
-
-
    * @param {*} networkId
    * @param {*} hash
    * @param {*} from
    * @param {*} nonce
    */
-  static async watchNewHeads(networkId) {
+  static async updateCachedEventsAndExtrinsicsInfo(networkId) {
     if (!PolkadotService.getNewHeadWatcher(networkId)) {
       logger.info(`Init watcher heads for network: ${networkId}`);
 
@@ -428,12 +393,23 @@ class PolkadotService {
         if (api) {
           // Wait until we are ready and connected
           await api.isReady;
-
+          
+          /**
+           * Query subscriptions
+           * https://polkadot.js.org/docs/api/start/api.query.subs
+           * 
+           **/
           const unsub = await api.rpc.chain.subscribeNewHeads(
             async (header) => {
-              const pendingExtrinsicHashes = await CacheService.getPendingExtrinsicHashes(
+              const pendingExtrinsicHashes = await CacheService.getCachedPendingExtrinsicHashes(
                 networkId
               );
+
+              /**
+               * filter extrinsics and its events
+               * https://polkadot.js.org/docs/api/cookbook/blocks
+               * 
+               */
               const blockHash = await api.rpc.chain.getBlockHash(header.number);
               const { block } = await api.rpc.chain.getBlock(blockHash);
               const blockEvents = await api.query.system.events.at(header.hash);
@@ -486,9 +462,9 @@ class PolkadotService {
               });
 
               try {
-                // Update extrinsics
+                // Update extrinsics in cache
                 await Promise.all(
-                  rows.map((row) => CacheService.upsertExtrinsic(row))
+                  rows.map((row) => CacheService.updateCachedExtrinsics(row))
                 );
               } catch (err) {
                 logger.error({ err }, 'Error trying to update extrinsis');
