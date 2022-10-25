@@ -47,7 +47,7 @@ class CacheService {
       );
 
       const extrinsic = new ExtrinsicModel();
-      const cacheExtrinsic = await CacheService.getExtrinsic(
+      const cacheExtrinsic = await CacheService.getCachedExtrinsic(
         hash,
         from,
         nonce,
@@ -73,7 +73,7 @@ class CacheService {
       // Update cache with data
       extrinsic.buildFrom(data);
       // Update extrinsic
-      await CacheService.setExtrinsic(
+      await CacheService.cacheExtrinsic(
         hash,
         from,
         nonce,
@@ -81,7 +81,7 @@ class CacheService {
         extrinsic.toJSON()
       );
       // Update network
-      await CacheService.setCachedNetworkExtrinsicKeys(networkId, extrinsicKeys);
+      await CacheService.cacheNetworkExtrinsicKeys(networkId, extrinsicKeys);
 
       return extrinsic;
     } catch (err) {
@@ -123,7 +123,7 @@ class CacheService {
         });
 
         // Update extrinsicCachedKeys
-        await CacheService.setCachedNetworkExtrinsicKeys(networkId, cachedExtrinsicKeys);
+        await CacheService.cacheNetworkExtrinsicKeys(networkId, cachedExtrinsicKeys);
       }
 
       return extrinsics.sort((a, b) => {
@@ -136,7 +136,7 @@ class CacheService {
     return [];
   }
 
-  static async getExtrinsic(hash, from, nonce, networkId) {
+  static async getCachedExtrinsic(hash, from, nonce, networkId) {
     const extrinsicKey = CacheService.generateExtrinsicKey(
       networkId,
       hash,
@@ -164,7 +164,7 @@ class CacheService {
    * @param {*} networkId 
    * @param {*} data 
    */
-  static async setExtrinsic(hash, from, nonce, networkId, data) {
+  static async cacheExtrinsic(hash, from, nonce, networkId, data) {
     const extrinsicKey = CacheService.generateExtrinsicKey(
       networkId,
       hash,
@@ -175,7 +175,7 @@ class CacheService {
     lruCache.set(extrinsicKey, JSON.stringify(data));
   }
 
-  static async setCachedNetworkExtrinsicKeys(networkId, data) {
+  static async cacheNetworkExtrinsicKeys(networkId, data) {
 
     const networkKey = CacheService.generateNetworkKey(networkId);
     lruCache.set(networkKey, JSON.stringify(data));
@@ -194,7 +194,7 @@ class CacheService {
     return hashes;
   }
 
-  static async setTokenSymbol(networkId, tokenSymbol = 'DOT') {
+  static async cacheTokenSymbol(networkId, tokenSymbol = 'DOT') {
     const tokenSymbolKey = CacheService.getTokenSymbolKey(networkId);
 
     lruCache.set(tokenSymbolKey, tokenSymbol);

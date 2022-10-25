@@ -7,6 +7,7 @@ const loggerMock = require('./mocks/logger.mock');
 const pendingExtrinsicsRawData = require('./mocks/pending-extrinsics.json');
 const pendingExtrinsicRawData = require('./mocks/pending-extrinsic.json');
 
+//TODO: fix test cases
 describe('CacheService', () => {
   const dotTokenSymbol = 'DOT';
   const networkId = 'test-netwotk-id';

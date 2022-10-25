@@ -50,7 +50,7 @@ class PolkadotService {
   static async setTokenSymbol(networkId, api) {
     const { tokenSymbol } = await api.rpc.system.properties();
 
-    await CacheService.setTokenSymbol(networkId, tokenSymbol.toString());
+    await CacheService.cacheTokenSymbol(networkId, tokenSymbol.toString());
   }
 
   static async initWatchers() {
@@ -276,7 +276,7 @@ class PolkadotService {
   //OLD: remove track extrinsic custom RPC
   static async trackExtrinsic(networkId, hash, from, nonce) {
     const api = await PolkadotService.connect(networkId);
-    const extrinsic = await CacheService.getExtrinsic(
+    const extrinsic = await CacheService.getCachedExtrinsic(
       hash,
       from,
       nonce,
