@@ -177,7 +177,7 @@ class PolkadotService {
           await api.isReady;
           logger.info(`watchPendingExtrinsics api: ${JSON.stringify(api.rpc.author.trackExtrinsic)}`);
 
-          const tokenSymbol = await CacheService.getTokenSymbol(networkId);
+          const tokenSymbol = await CacheService.getCachedTokenSymbol(networkId);
 
           //update extrinsics info in cache
           await PolkadotService.updateCachedEventsAndExtrinsicsInfo(networkId);

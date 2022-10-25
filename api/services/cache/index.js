@@ -200,7 +200,7 @@ class CacheService {
     lruCache.set(tokenSymbolKey, tokenSymbol);
   }
 
-  static async getTokenSymbol(networkId) {
+  static async getCachedTokenSymbol(networkId) {
     const tokenSymbolKey = CacheService.getTokenSymbolKey(networkId);
 
     return lruCache.get(tokenSymbolKey);
