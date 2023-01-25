@@ -193,7 +193,7 @@ export const ExplorerProvider: React.FC = ({ children }) => {
 
       dispatch({
         type: API_ERROR_ACTION,
-        payload: { errorMessage: error.message },
+        payload: { errorMessage: 'error.message' },
       })
     }
   }
@@ -233,7 +233,7 @@ export const ExplorerProvider: React.FC = ({ children }) => {
 
       dispatch({
         type: API_ERROR_ACTION,
-        payload: { errorMessage: error.message },
+        payload: { errorMessage: 'error.message' },
       })
     }
   }
