@@ -6,8 +6,13 @@ Mempool Explorer allow users to monitor pending transactions on [Polkadot](https
 
  - Install [Node.js](https://nodejs.org/)
    - Recommended method is by using [NVM](https://github.com/creationix/nvm)
-   - Recommended Node.js version is v12
+   - Recommended Node.js version is v14
  - Install [Docker](https://docs.docker.com/get-docker/)
+
+ ### Windows
+ - Install nvm windows https://github.com/coreybutler/nvm-windows
+ - nvm install 14
+ - npm install -g win-node-env
 
 ## Demo
 
