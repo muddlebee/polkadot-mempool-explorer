@@ -1,6 +1,6 @@
 # Polkadot Mempool Explorer API
 
-Mempool Explorer API Definition [api-docs](https://mempool.dot.protofire.io/api/v1/api-docs).
+Mempool Explorer API Definition [api-docs](http://localhost:8081/api/v1/api-docs/#/).
 
 ## Environment setup
 
@@ -10,17 +10,8 @@ Mempool Explorer API Definition [api-docs](https://mempool.dot.protofire.io/api/
 
 ## Demo
 
-[mempool.dot.protofire.io](https://mempool.dot.protofire.io)
+http://localhost:8081/api/v1/api-docs/#/
 
-## Custom Polkadot Node
-
-In order to track extrinsics lifecycle. We added a new RPC method ([author_trackExtrinsic](https://github.com/protofire/polkadot-mempool-explorer/blob/develop/api/services/polkadot/custom-rpc-methods.js)) on [Substrate core](https://github.com/jarcodallo/substrate/blob/master/client/rpc-api/src/author/mod.rs).
-
-This basically allows someone to subscribe and track status changes in the extrinsics lifecycle, for example movements getting in or out of queues, and everything that matters for us before including those extrinsics in blocks.
-  
- - Substrate change: [github.com/paritytech/substrate](https://github.com/jarcodallo/substrate/commits/master)
- - Polkadot dependencies update: [github.com/paritytech/polkadot](https://github.com/jarcodallo/polkadot/commits/master)
- - Docker image of the polkadot binary: [hub.docker.com/polkadot](https://hub.docker.com/repository/docker/jarcodallo/polkadot)
 
 ## Get Started
 
