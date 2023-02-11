@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ButtonHTMLAttributes } from 'react'
 import styled from 'styled-components'
 
 import { CopyIcon } from 'components/icons/CopyIcon'
@@ -41,7 +41,7 @@ const Wrapper = styled.button`
   }
 `
 
-interface Props {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   value: string
 }
 
