@@ -21,7 +21,7 @@ const Wrapper = styled.div``
 
 const TitleDropdownButton = styled.button`
   align-items: center;
-  background: transparent;
+  background: #f8f9fb;
   border: none;
   cursor: pointer;
   display: flex;

@@ -4,12 +4,15 @@ import styled, { css } from 'styled-components'
 import { ButtonCopy } from 'components/buttons/ButtonCopy'
 import { ButtonExternalLink } from 'components/buttons/ButtonExternalLink'
 import { CheckIcon } from 'components/icons/CheckIcon'
+import { CopyIcon } from 'components/icons/CopyIcon'
 import { ErrorIcon } from 'components/icons/ErrorIcon'
 import { TimeIcon } from 'components/icons/TimeIcon'
 import { TransferArrow } from 'components/icons/TransferArrow'
 import { BaseCard } from 'components/pureStyledComponents/BaseCard'
 import { Transaction as ExtrinsicModel } from 'contexts/ExplorerContext'
 import Identicon from 'react-hooks-identicons'
+
+import theme from '../../../theme/index'
 
 const Wrapper = styled(BaseCard)`
   margin: 0 0 10px;
@@ -104,6 +107,9 @@ const LinkValue = styled.a`
 const TimeWrapper = styled.div`
   align-items: center;
   display: flex;
+  align-self: flex-end;
+
+  margin-top: 8px;
 `
 
 const Time = styled.a`
@@ -187,10 +193,14 @@ const IdenticonCol = styled.div`
   padding-top: 5px;
 `
 const IdenticonWrapper = styled.div`
+  grid-row: 1 / span 2;
+
+  width: 98%;
+  aspect-ratio: 1;
+
   border-radius: 50%;
-  height: 32px;
+
   overflow: hidden;
-  width: 32px;
 
   canvas {
     display: block;
@@ -199,6 +209,150 @@ const IdenticonWrapper = styled.div`
 
 const TransferInfo = styled.div`
   min-width: 0;
+`
+
+const TransactionContainer = styled.div`
+  width: 100%;
+  aspect-ratio: 1151 / 192;
+
+  margin-bottom: 20px;
+
+  padding-top: 26px;
+  padding-bottom: 24px;
+  padding-left: 30px;
+  padding-right: 31px;
+
+  font-size: 12px;
+  border-style: solid;
+  border-width: 0;
+  border-left-width: 6px;
+  border-radius: 14px;
+  border-color: ${(props) => props.theme.colors.primary};
+  background-color: ${(props) => props.theme.cards.backgroundColor};
+
+  &.inMempool {
+    border-color: ${(props) => props.theme.colors.primary};
+  }
+
+  &.justRemoved {
+    border-color: ${(props) => props.theme.colors.mediumGrey};
+  }
+`
+const ContentWrapper = styled.div`
+  display: grid;
+
+  grid-template-rows: 29.57% 1fr;
+  grid-template-columns: 65.504% 1fr;
+  /* grid-template-columns: 0.655fr 0.3082fr; */
+
+  column-gap: 3.475%;
+  row-gap: 6.25%;
+
+  width: 100%; // 94.7%;
+  height: 100%; // 73.43%;
+`
+
+const TxHashContainer = styled.div`
+  display: flex;
+  align-items: center;
+  grid-column: 1;
+
+  padding-left: 14px;
+
+  border-radius: 5px;
+
+  background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
+`
+
+const TxHashLabel = styled.div`
+  width: 8.123%;
+  color: ${(props) => props.theme.colors.lightBlack};
+  font-weight: 700;
+  //font-size: 12px;
+`
+const TxHash = styled.div`
+  width: 81.36%;
+  margin-left: 4px;
+  color: ${(props) => props.theme.colors.infoTextColor};
+  font-weight: 400;
+  //font-size: 12px;
+`
+
+const BalanceTransferContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 2;
+
+  border-radius: 5px;
+
+  background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
+`
+const BalanceTransferLabel = styled.div`
+  width: 36.65%;
+  color: ${(props) => props.theme.colors.lightBlack};
+  font-weight: 700;
+`
+const BalanceTransferAmount = styled.div`
+  width: 25%;
+  margin-left: 4px;
+  color: ${(props) => props.theme.colors.primary};
+  font-weight: 700;
+`
+
+const AdditionalInfoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  grid-row: 2;
+  grid-column: 1;
+`
+
+const HorizontalStripContainer = styled.div`
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  column-gap: 1.67%;
+
+  height: 67.045%;
+`
+
+const HorizontalStrip = styled.div`
+  height: 100%;
+  aspect-ratio: 168.35 / 59;
+
+  padding-top: 13px;
+  padding-left: 16px;
+
+  border-radius: 5px;
+  background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
+`
+const HorizontalStripLabel = styled.div`
+  color: ${(props) => props.theme.cards.mediumBlack};
+  font-weight: 600;
+`
+const HorizontalStripText = styled.div`
+  color: ${(props) => props.theme.colors.infoTextColor};
+  font-weight: 400;
+`
+const MiniCardContainer = styled.div`
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2.67%;
+`
+
+const MiniCard = styled.div`
+  border-radius: 5px;
+  background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
+`
+const ProfileContainer = styled.div`
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 27.27% 1fr;
+
+  width: 100%;
+  height: 53.4%;
 `
 
 interface Props {
@@ -224,6 +378,68 @@ export const Transaction: React.FC<Props> = (props) => {
   const blockURL = `${explorerURL}block/`
   const extrinsicURL = `${explorerURL}extrinsic/`
   const accountURL = `${explorerURL}account/`
+
+  return (
+    <TransactionContainer className={isFinalized ? 'justRemoved' : 'inMempool'}>
+      <ContentWrapper>
+        <TxHashContainer>
+          <TxHashLabel>Tx Hash:</TxHashLabel> <TxHash>{hash}</TxHash>
+          <ButtonCopy
+            style={{
+              backgroundColor: theme.colors.iconBackgroundColor,
+            }}
+            value={hash}
+          />
+          <ButtonExternalLink
+            href={`${extrinsicURL}${hash}`}
+            style={{
+              marginLeft: '5px',
+              marginRight: '14px',
+              backgroundColor: theme.colors.iconBackgroundColor,
+            }}
+          />
+        </TxHashContainer>
+
+        <BalanceTransferContainer>
+          <BalanceTransferLabel>Balance Transfer:</BalanceTransferLabel>
+          <BalanceTransferAmount>{balanceTransfer}</BalanceTransferAmount>
+        </BalanceTransferContainer>
+
+        <AdditionalInfoContainer>
+          <HorizontalStripContainer>
+            <HorizontalStrip>
+              <HorizontalStripLabel>Block Number:</HorizontalStripLabel>
+              <HorizontalStripText>{'#' + blockNumber}</HorizontalStripText>
+            </HorizontalStrip>
+            <HorizontalStrip>
+              <HorizontalStripLabel>Nonce:</HorizontalStripLabel>
+              <HorizontalStripText>{'#' + nonce}</HorizontalStripText>
+            </HorizontalStrip>
+            <HorizontalStrip>
+              <HorizontalStripLabel>Extrinsic Type</HorizontalStripLabel>
+              <HorizontalStripText>{type}</HorizontalStripText>
+            </HorizontalStrip>
+            <HorizontalStrip>
+              <HorizontalStripLabel>Result Type</HorizontalStripLabel>
+              <HorizontalStripText>{result}</HorizontalStripText>
+            </HorizontalStrip>
+          </HorizontalStripContainer>
+
+          <TimeWrapper>
+            <TimeIcon />
+            <Time href={`${extrinsicURL}${hash}`} target="_blank">
+              {updateAt}
+            </Time>
+          </TimeWrapper>
+        </AdditionalInfoContainer>
+
+        <MiniCardContainer>
+          <MiniCard></MiniCard>
+          <MiniCard></MiniCard>
+        </MiniCardContainer>
+      </ContentWrapper>
+    </TransactionContainer>
+  )
 
   return (
     <Wrapper {...restProps} className={isFinalized ? 'justRemoved' : 'inMempool'}>
