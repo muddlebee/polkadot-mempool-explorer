@@ -103,11 +103,11 @@ const theme = {
     paddingHorizontal: '8px',
   },
   themeBreakPoints: {
-    lg: '992px',
+    lg: '950px',
     md: '769px',
     mdPre: '768px',
     sm: '480px',
-    xl: '1024px',
+    xl: '1090px',
     xs: '320px',
     xxl: '1280px',
     xxxl: '1366px',

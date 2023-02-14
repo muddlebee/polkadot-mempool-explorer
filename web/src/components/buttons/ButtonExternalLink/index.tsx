@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from 'components/icons/ExternalLinkIcon'
 
 const Wrapper = styled.a`
   align-items: center;
-  background: #f0f1f2;
+  background: ${(props) => props.theme.colors.iconBackgroundColor};
   border-radius: 50%;
   border: none;
   cursor: pointer;

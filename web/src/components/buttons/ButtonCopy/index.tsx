@@ -6,7 +6,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 const Wrapper = styled.button`
   align-items: center;
-  background: #f0f1f2;
+  background: ${(props) => props.theme.colors.iconBackgroundColor};
   border-radius: 50%;
   border: none;
   cursor: pointer;

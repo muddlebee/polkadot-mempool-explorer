@@ -10,6 +10,7 @@ import { TimeIcon } from 'components/icons/TimeIcon'
 import { TransferArrow } from 'components/icons/TransferArrow'
 import { BaseCard } from 'components/pureStyledComponents/BaseCard'
 import { Transaction as ExtrinsicModel } from 'contexts/ExplorerContext'
+import useMempoolExplorer from 'hooks/useMempoolExplorer'
 import Identicon from 'react-hooks-identicons'
 
 import theme from '../../../theme/index'
@@ -109,12 +110,12 @@ const TimeWrapper = styled.div`
   display: flex;
   align-self: flex-end;
 
-  margin-top: 8px;
+  margin-top: 11px;
 `
 
 const Time = styled.a`
   color: ${(props) => props.theme.colors.mediumGrey};
-  font-size: 13px;
+  font-size: 0.833em;
   font-weight: 400;
   line-height: 1.2;
   margin-left: 6px;
@@ -213,7 +214,7 @@ const TransferInfo = styled.div`
 
 const TransactionContainer = styled.div`
   width: 100%;
-  aspect-ratio: 1151 / 192;
+  aspect-ratio: 1151 / 185;
 
   margin-bottom: 20px;
 
@@ -237,11 +238,20 @@ const TransactionContainer = styled.div`
   &.justRemoved {
     border-color: ${(props) => props.theme.colors.mediumGrey};
   }
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.xl}) {
+    font-size: 10px;
+  }
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.lg}) {
+    font-size: 8px;
+  }
 `
 const ContentWrapper = styled.div`
   display: grid;
 
-  grid-template-rows: 29.57% 1fr;
+  /* grid-template-rows: 29.57% 1fr; */
+  grid-template-rows: 1fr 61.26%;
   grid-template-columns: 65.504% 1fr;
   /* grid-template-columns: 0.655fr 0.3082fr; */
 
@@ -320,6 +330,7 @@ const HorizontalStripContainer = styled.div`
 const HorizontalStrip = styled.div`
   height: 100%;
   aspect-ratio: 168.35 / 59;
+  max-width: 100%;
 
   padding-top: 13px;
   padding-left: 16px;
@@ -336,23 +347,72 @@ const HorizontalStripText = styled.div`
   font-weight: 400;
 `
 const MiniCardContainer = styled.div`
+  position: relative;
   display: grid;
 
   grid-template-columns: 1fr 1fr;
   column-gap: 2.67%;
 `
+const TransferArrowContainer = styled.div`
+  position: absolute;
+
+  width: 7.121%;
+
+  top: 14.77%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+
+  background-color: #fff;
+  border-radius: 50%;
+`
 
 const MiniCard = styled.div`
+  padding-top: 7px;
+  padding-bottom: 9px;
+  padding-left: 5px;
+  padding-right: 5px;
+
   border-radius: 5px;
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 `
+const CopyAndExternalLinkContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 7px;
+`
 const ProfileContainer = styled.div`
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 50% 50%;
   grid-template-columns: 27.27% 1fr;
+  column-gap: 4%;
 
   width: 100%;
   height: 53.4%;
+`
+const UserDP = styled.div`
+  grid-row: 1 / span 2;
+  width: 100%;
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+  overflow: hidden;
+`
+const UserDesignationLabel = styled.div`
+  grid-row: 1;
+  grid-column: 2;
+  font-weight: 600;
+  font-size: 1em;
+  color: #000;
+`
+const UserUID = styled.div`
+  grid-row: 2;
+  grid-column: 2;
+
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 `
 
 interface Props {
@@ -373,29 +433,44 @@ export const Transaction: React.FC<Props> = (props) => {
     type,
     update_at: updateAt,
   } = data
+  const { selectedNetwork } = useMempoolExplorer()
   const result = isValid ? 'Valid' : 'Invalid'
-  const explorerURL = 'https://polkadot.subscan.io/'
+  const explorerURL = `https://${selectedNetwork.id}.subscan.io/`
   const blockURL = `${explorerURL}block/`
   const extrinsicURL = `${explorerURL}extrinsic/`
   const accountURL = `${explorerURL}account/`
+
+  console.log('to')
+  console.log(to === '')
+
+  let senderBrokenUid = ''
+  let receiverBrokenUid = ''
+  for (let i = 0; i < 11; i++) {
+    senderBrokenUid += from[i]
+  }
+  senderBrokenUid += '...'
+
+  if (!(to === undefined || to === null || to === '')) {
+    for (let i = 0; i < 11; i++) {
+      receiverBrokenUid += to[i]
+    }
+    receiverBrokenUid += '...'
+  }
+
+  console.log('receiver broken uid')
+  console.log(receiverBrokenUid)
 
   return (
     <TransactionContainer className={isFinalized ? 'justRemoved' : 'inMempool'}>
       <ContentWrapper>
         <TxHashContainer>
           <TxHashLabel>Tx Hash:</TxHashLabel> <TxHash>{hash}</TxHash>
-          <ButtonCopy
-            style={{
-              backgroundColor: theme.colors.iconBackgroundColor,
-            }}
-            value={hash}
-          />
+          <ButtonCopy value={hash} />
           <ButtonExternalLink
             href={`${extrinsicURL}${hash}`}
             style={{
               marginLeft: '5px',
               marginRight: '14px',
-              backgroundColor: theme.colors.iconBackgroundColor,
             }}
           />
         </TxHashContainer>
@@ -434,8 +509,56 @@ export const Transaction: React.FC<Props> = (props) => {
         </AdditionalInfoContainer>
 
         <MiniCardContainer>
-          <MiniCard></MiniCard>
-          <MiniCard></MiniCard>
+          <MiniCard>
+            <ProfileContainer>
+              <UserDP>{<Identicon bg="#000000" count="5" size="70" string={from} />}</UserDP>
+              <UserDesignationLabel>From</UserDesignationLabel>
+              <UserUID>{senderBrokenUid}</UserUID>
+            </ProfileContainer>
+
+            <CopyAndExternalLinkContainer>
+              <ButtonCopy value={from} />
+              <ButtonExternalLink
+                href={`${accountURL}${from}`}
+                style={{
+                  marginLeft: '5px',
+                  marginRight: '0px',
+                }}
+              />
+            </CopyAndExternalLinkContainer>
+          </MiniCard>
+
+          <MiniCard>
+            <ProfileContainer>
+              <UserDP>{<Identicon bg="#000000" count="5" size="70" string={to} />}</UserDP>
+              <UserDesignationLabel>To</UserDesignationLabel>
+              <UserUID>{receiverBrokenUid}</UserUID>
+            </ProfileContainer>
+
+            <CopyAndExternalLinkContainer>
+              <ButtonCopy value={to} />
+              <ButtonExternalLink
+                href={`${accountURL}${to}`}
+                style={{
+                  marginLeft: '5px',
+                  marginRight: '0px',
+                }}
+              />
+            </CopyAndExternalLinkContainer>
+          </MiniCard>
+
+          <TransferArrowContainer>
+            <TransferArrow
+              style={{
+                position: 'relative',
+                width: '65%',
+
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, 0%)',
+              }}
+            />
+          </TransferArrowContainer>
         </MiniCardContainer>
       </ContentWrapper>
     </TransactionContainer>

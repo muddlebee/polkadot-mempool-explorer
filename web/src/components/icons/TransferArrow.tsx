@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { SVGAttributes } from 'react'
 import styled from 'styled-components'
 
 const Wrapper = styled.svg`
@@ -8,7 +8,7 @@ const Wrapper = styled.svg`
   }
 `
 
-export const TransferArrow: React.FC<{ className?: string }> = (props) => (
+export const TransferArrow: React.FC<SVGAttributes<HTMLOrSVGElement>> = (props) => (
   <Wrapper
     className={`transferArrow ${props.className}`}
     height="19.452"
