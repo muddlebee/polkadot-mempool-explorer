@@ -246,6 +246,12 @@ const TransactionContainer = styled.div`
   @media (max-width: ${(props) => props.theme.themeBreakPoints.lg}) {
     font-size: 8px;
   }
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    aspect-ratio: 292 / 255;
+
+    font-size: 6px;
+  }
 `
 const ContentWrapper = styled.div`
   display: grid;
@@ -260,6 +266,13 @@ const ContentWrapper = styled.div`
 
   width: 100%; // 94.7%;
   height: 100%; // 73.43%;
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    grid-template-columns: 100%;
+    grid-template-rows: auto;
+
+    row-gap: 4px;
+  }
 `
 
 const TxHashContainer = styled.div`
@@ -272,6 +285,11 @@ const TxHashContainer = styled.div`
   border-radius: 5px;
 
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    grid-row: 3;
+    grid-column: 1 / span 1;
+  }
 `
 
 const TxHashLabel = styled.div`
@@ -297,6 +315,13 @@ const BalanceTransferContainer = styled.div`
   border-radius: 5px;
 
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    grid-row: 1;
+    grid-column: 1 / span 1;
+
+    aspect-ratio: 274 / 30;
+  }
 `
 const BalanceTransferLabel = styled.div`
   width: 36.65%;
@@ -315,6 +340,11 @@ const AdditionalInfoContainer = styled.div`
   flex-direction: column;
   grid-row: 2;
   grid-column: 1;
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    flex-direction: column-reverse;
+    grid-row: 4;
+  }
 `
 
 const HorizontalStripContainer = styled.div`
@@ -325,6 +355,14 @@ const HorizontalStripContainer = styled.div`
   column-gap: 1.67%;
 
   height: 67.045%;
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    column-gap: 4px;
+    row-gap: 5px;
+  }
 `
 
 const HorizontalStrip = styled.div`
@@ -332,8 +370,8 @@ const HorizontalStrip = styled.div`
   aspect-ratio: 168.35 / 59;
   max-width: 100%;
 
-  padding-top: 13px;
-  padding-left: 16px;
+  padding-top: 0; //13px;
+  padding-left: 0; //16px;
 
   border-radius: 5px;
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
@@ -352,6 +390,11 @@ const MiniCardContainer = styled.div`
 
   grid-template-columns: 1fr 1fr;
   column-gap: 2.67%;
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    grid-row: 2;
+    column-gap: 4px;
+  }
 `
 const TransferArrowContainer = styled.div`
   position: absolute;
@@ -475,10 +518,12 @@ export const Transaction: React.FC<Props> = (props) => {
           />
         </TxHashContainer>
 
-        <BalanceTransferContainer>
-          <BalanceTransferLabel>Balance Transfer:</BalanceTransferLabel>
-          <BalanceTransferAmount>{balanceTransfer}</BalanceTransferAmount>
-        </BalanceTransferContainer>
+        {type !== 'Inherent' && (
+          <BalanceTransferContainer>
+            <BalanceTransferLabel>Balance Transfer:</BalanceTransferLabel>
+            <BalanceTransferAmount>{balanceTransfer}</BalanceTransferAmount>
+          </BalanceTransferContainer>
+        )}
 
         <AdditionalInfoContainer>
           <HorizontalStripContainer>
@@ -508,58 +553,60 @@ export const Transaction: React.FC<Props> = (props) => {
           </TimeWrapper>
         </AdditionalInfoContainer>
 
-        <MiniCardContainer>
-          <MiniCard>
-            <ProfileContainer>
-              <UserDP>{<Identicon bg="#000000" count="5" size="70" string={from} />}</UserDP>
-              <UserDesignationLabel>From</UserDesignationLabel>
-              <UserUID>{senderBrokenUid}</UserUID>
-            </ProfileContainer>
+        {type !== 'Inherent' && (
+          <MiniCardContainer>
+            <MiniCard>
+              <ProfileContainer>
+                <UserDP>{<Identicon bg="#000000" count="5" size="70" string={from} />}</UserDP>
+                <UserDesignationLabel>From</UserDesignationLabel>
+                <UserUID>{senderBrokenUid}</UserUID>
+              </ProfileContainer>
 
-            <CopyAndExternalLinkContainer>
-              <ButtonCopy value={from} />
-              <ButtonExternalLink
-                href={`${accountURL}${from}`}
+              <CopyAndExternalLinkContainer>
+                <ButtonCopy value={from} />
+                <ButtonExternalLink
+                  href={`${accountURL}${from}`}
+                  style={{
+                    marginLeft: '5px',
+                    marginRight: '0px',
+                  }}
+                />
+              </CopyAndExternalLinkContainer>
+            </MiniCard>
+
+            <MiniCard>
+              <ProfileContainer>
+                <UserDP>{<Identicon bg="#000000" count="5" size="70" string={to} />}</UserDP>
+                <UserDesignationLabel>To</UserDesignationLabel>
+                <UserUID>{receiverBrokenUid}</UserUID>
+              </ProfileContainer>
+
+              <CopyAndExternalLinkContainer>
+                <ButtonCopy value={to} />
+                <ButtonExternalLink
+                  href={`${accountURL}${to}`}
+                  style={{
+                    marginLeft: '5px',
+                    marginRight: '0px',
+                  }}
+                />
+              </CopyAndExternalLinkContainer>
+            </MiniCard>
+
+            <TransferArrowContainer>
+              <TransferArrow
                 style={{
-                  marginLeft: '5px',
-                  marginRight: '0px',
+                  position: 'relative',
+                  width: '65%',
+
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, 0%)',
                 }}
               />
-            </CopyAndExternalLinkContainer>
-          </MiniCard>
-
-          <MiniCard>
-            <ProfileContainer>
-              <UserDP>{<Identicon bg="#000000" count="5" size="70" string={to} />}</UserDP>
-              <UserDesignationLabel>To</UserDesignationLabel>
-              <UserUID>{receiverBrokenUid}</UserUID>
-            </ProfileContainer>
-
-            <CopyAndExternalLinkContainer>
-              <ButtonCopy value={to} />
-              <ButtonExternalLink
-                href={`${accountURL}${to}`}
-                style={{
-                  marginLeft: '5px',
-                  marginRight: '0px',
-                }}
-              />
-            </CopyAndExternalLinkContainer>
-          </MiniCard>
-
-          <TransferArrowContainer>
-            <TransferArrow
-              style={{
-                position: 'relative',
-                width: '65%',
-
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, 0%)',
-              }}
-            />
-          </TransferArrowContainer>
-        </MiniCardContainer>
+            </TransferArrowContainer>
+          </MiniCardContainer>
+        )}
       </ContentWrapper>
     </TransactionContainer>
   )
