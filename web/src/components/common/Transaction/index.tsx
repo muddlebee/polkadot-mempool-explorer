@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { ButtonCopy } from 'components/buttons/ButtonCopy'
@@ -14,6 +14,10 @@ import useMempoolExplorer from 'hooks/useMempoolExplorer'
 import Identicon from 'react-hooks-identicons'
 
 import theme from '../../../theme/index'
+
+interface StateType {
+  isBlockDetailHidden: boolean
+}
 
 const Wrapper = styled(BaseCard)`
   margin: 0 0 10px;
@@ -212,16 +216,18 @@ const TransferInfo = styled.div`
   min-width: 0;
 `
 
-const TransactionContainer = styled.div`
+const TransactionContainer = styled.div<StateType>`
   width: 100%;
   aspect-ratio: 1151 / 185;
 
   margin-bottom: 20px;
 
-  padding-top: 26px;
-  padding-bottom: 24px;
-  padding-left: 30px;
-  padding-right: 31px;
+  padding-top: 0; //26px;
+  padding-bottom: 0; //24px;
+  padding-left: 0; //30px;
+  padding-right: 0; //31px;
+
+  position: relative;
 
   font-size: 12px;
   border-style: solid;
@@ -248,7 +254,8 @@ const TransactionContainer = styled.div`
   }
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
-    aspect-ratio: 292 / 255;
+    aspect-ratio: ${(props) =>
+      props.isBlockDetailHidden ? '292 / 165' : '292 / 255'}; //292 / 255;
 
     font-size: 6px;
   }
@@ -264,8 +271,12 @@ const ContentWrapper = styled.div`
   column-gap: 3.475%;
   row-gap: 6.25%;
 
-  width: 100%; // 94.7%;
-  height: 100%; // 73.43%;
+  width: 94.7%;
+  height: 73.43%;
+  /* position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); */
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     grid-template-columns: 100%;
@@ -334,6 +345,15 @@ const BalanceTransferAmount = styled.div`
   color: ${(props) => props.theme.colors.primary};
   font-weight: 700;
 `
+const DetailsToggleBtn = styled.div`
+  display: none;
+  width: 100%;
+  height: 15px;
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    display: block;
+  }
+`
 
 const AdditionalInfoContainer = styled.div`
   display: flex;
@@ -344,10 +364,11 @@ const AdditionalInfoContainer = styled.div`
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     flex-direction: column-reverse;
     grid-row: 4;
+    height: fit-content;
   }
 `
 
-const HorizontalStripContainer = styled.div`
+const HorizontalStripContainer = styled.div<StateType>`
   display: grid;
 
   grid-template-columns: repeat(4, 1fr);
@@ -357,6 +378,7 @@ const HorizontalStripContainer = styled.div`
   height: 67.045%;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    display: ${(props) => (props.isBlockDetailHidden ? 'none' : 'grid')};
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
 
@@ -463,6 +485,7 @@ interface Props {
 }
 
 export const Transaction: React.FC<Props> = (props) => {
+  const [state, setState] = useState<StateType>({ isBlockDetailHidden: false })
   const { data, ...restProps } = props
   const {
     balance_transfer: balanceTransfer,
@@ -483,9 +506,6 @@ export const Transaction: React.FC<Props> = (props) => {
   const extrinsicURL = `${explorerURL}extrinsic/`
   const accountURL = `${explorerURL}account/`
 
-  console.log('to')
-  console.log(to === '')
-
   let senderBrokenUid = ''
   let receiverBrokenUid = ''
   for (let i = 0; i < 11; i++) {
@@ -500,11 +520,30 @@ export const Transaction: React.FC<Props> = (props) => {
     receiverBrokenUid += '...'
   }
 
-  console.log('receiver broken uid')
-  console.log(receiverBrokenUid)
+  // console.log('receiver broken uid')
+  // console.log(receiverBrokenUid)
+
+  const onDetailToggleBtnClicked = () => {
+    console.log('CLicked it')
+    if (state.isBlockDetailHidden) {
+      setState({
+        ...state,
+        isBlockDetailHidden: false,
+      })
+      return
+    }
+
+    setState({
+      ...state,
+      isBlockDetailHidden: true,
+    })
+  }
 
   return (
-    <TransactionContainer className={isFinalized ? 'justRemoved' : 'inMempool'}>
+    <TransactionContainer
+      className={isFinalized ? 'justRemoved' : 'inMempool'}
+      isBlockDetailHidden={state.isBlockDetailHidden}
+    >
       <ContentWrapper>
         <TxHashContainer>
           <TxHashLabel>Tx Hash:</TxHashLabel> <TxHash>{hash}</TxHash>
@@ -526,7 +565,7 @@ export const Transaction: React.FC<Props> = (props) => {
         )}
 
         <AdditionalInfoContainer>
-          <HorizontalStripContainer>
+          <HorizontalStripContainer isBlockDetailHidden={state.isBlockDetailHidden}>
             <HorizontalStrip>
               <HorizontalStripLabel>Block Number:</HorizontalStripLabel>
               <HorizontalStripText>{'#' + blockNumber}</HorizontalStripText>
@@ -607,6 +646,8 @@ export const Transaction: React.FC<Props> = (props) => {
             </TransferArrowContainer>
           </MiniCardContainer>
         )}
+
+        <DetailsToggleBtn onClick={onDetailToggleBtnClicked}>Details</DetailsToggleBtn>
       </ContentWrapper>
     </TransactionContainer>
   )
