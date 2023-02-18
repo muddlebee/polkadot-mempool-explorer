@@ -62,13 +62,13 @@ class CacheService {
           // Remove last element from cache
           // pop() method removes the last element from an array and returns that element.
 
-          //TODO: improve below logic and delete older entries which are not returned by the pending extrinsics API
-
           lruCache.delete(extrinsicKeys.pop());
         }
 
         extrinsicKeys.push(extrinsicKey);
       }
+      //print data with json format
+      console.log("data >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + JSON.stringify(data));
 
       // Update cache with data
       extrinsic.buildFrom(data);

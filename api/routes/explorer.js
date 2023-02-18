@@ -80,7 +80,7 @@ router.get('/transactions/:networkId', async (req, res) => {
         type,
         nonce: extrinsic.nonce,
         tip: extrinsic.tip,
-        balance_transfer: `${extrinsic.value} ${extrinsic.tokenSymbol}`,
+        balance_transfer: `${extrinsic.toUnitAmount} ${extrinsic.tokenSymbol}`,
         isValid: extrinsic.success,
         isFinalized: extrinsic.finalized,
         from: extrinsic.from,

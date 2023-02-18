@@ -2,6 +2,8 @@
  * Module dependencies
  */
 const { ApiPromise, WsProvider } = require('@polkadot/api');
+const { BN } =  require('@polkadot/util');
+
 const { DEVELOPMENT, FETCH_PENDING_EXTRINSICS_DELAY } = require('../../env');
 const {
   LIVE_NETWORKS,
@@ -80,7 +82,6 @@ class PolkadotService {
         let options = { provider };
         let api = await ApiPromise.create(options);
         const { methods } = await api.rpc.rpc.methods();
-        logger.info(`IRPC methods called: ${methods}`);
 
         customMethodKeys.forEach((methodKey) => {
           if (methods.includes(methodKey)) {
@@ -413,6 +414,8 @@ class PolkadotService {
               const blockHash = await api.rpc.chain.getBlockHash(header.number);
               const { block } = await api.rpc.chain.getBlock(blockHash);
               const blockEvents = await api.query.system.events.at(header.hash);
+              const chainDecimals = await api.registry.chainDecimals[0];
+
               const rows = [];
 
               // map between the extrinsics and events
@@ -457,6 +460,26 @@ class PolkadotService {
                       };
                     });
 
+
+                    // fetch the transfer amount from the events
+                    blockEvents
+                        // filter the specific events based on the phase and then the
+                        // index of our extrinsic in the block
+                        .filter(({ phase }) =>
+                          phase.isApplyExtrinsic &&
+                          phase.asApplyExtrinsic.eq(index)
+                        )
+                        // match the Transfer event
+                        .forEach(({ event }) => {
+                            if(event.method === 'Transfer'){
+                              if(event.data.hasOwnProperty('amount')){
+                                const amount = event.data.amount;
+                                data.toUnitAmount = JSON.stringify(toUnit(amount,chainDecimals));
+                                logger.info(`amount:::::::::: ${data.toUnitAmount}`);
+                              }
+                            }
+                        });
+
                   rows.push(data);
                 }
               });
@@ -481,6 +504,11 @@ class PolkadotService {
   }
 }
 
+function toUnit(balance, decimals) {
+  const base = new BN(10).pow(new BN(decimals));
+  const dm = new BN(balance).divmod(base);
+  return parseFloat(dm.div.toString() + "." + dm.mod.toString())
+}
 /**
  * Expose PolkadotService
  */

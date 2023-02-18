@@ -63,6 +63,7 @@ class ExtrinsicModel {
     tokenSymbol,
     era,
     block,
+    toUnitAmount
   } = {}) {
     this.section = section || this.section;
     this.method = method || this.method;
@@ -86,6 +87,7 @@ class ExtrinsicModel {
     this.tokenSymbol = tokenSymbol || this.tokenSymbol;
     this.era = { ...this.era, ...(era || {}) };
     this.block = { ...this.block, ...(block || {}) };
+    this.toUnitAmount = toUnitAmount;
   }
 
   /**
@@ -115,6 +117,7 @@ class ExtrinsicModel {
       updateAt: this.updateAt,
       tokenSymbol: this.tokenSymbol,
       era: this.era,
+      toUnitAmount: this.toUnitAmount
     });
   }
 }
