@@ -68,7 +68,7 @@ class CacheService {
         extrinsicKeys.push(extrinsicKey);
       }
       //print data with json format
-      console.log("data >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + JSON.stringify(data));
+      logger.info("data --------------------------------->" + JSON.stringify(data));
 
       // Update cache with data
       extrinsic.buildFrom(data);
