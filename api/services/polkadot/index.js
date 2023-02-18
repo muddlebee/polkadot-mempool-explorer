@@ -2,7 +2,7 @@
  * Module dependencies
  */
 const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { BN } =  require('@polkadot/util');
+const { BN } = require('@polkadot/util');
 
 const { DEVELOPMENT, FETCH_PENDING_EXTRINSICS_DELAY } = require('../../env');
 const {
@@ -142,9 +142,9 @@ class PolkadotService {
    */
   static async resetWatchPendingExtrinsics(networkId) {
 
-      PolkadotService.unSubscribeWatchers(networkId);
-      await PolkadotService.updateCachedEventsAndExtrinsicsInfo(networkId);
-      return PolkadotService.watchPendingExtrinsics(networkId);
+    PolkadotService.unSubscribeWatchers(networkId);
+    await PolkadotService.updateCachedEventsAndExtrinsicsInfo(networkId);
+    return PolkadotService.watchPendingExtrinsics(networkId);
   }
 
   static unSubscribeWatchers(networkId) {
@@ -201,11 +201,11 @@ class PolkadotService {
                   let value = 0;
                   let symbol = tokenSymbol;
                   let era = { isMortal: false };
-                
+
                   extrinsic.args.forEach((arg) => {
                     if (arg.toRawType().includes('AccountId')) {
                       to = arg.toString();
-                    } 
+                    }
                     /* else if (arg.toRawType().includes('Compact<Balance>')) {
                       [value, symbol] = arg.toHuman().split(' ');
                     } */
@@ -394,7 +394,7 @@ class PolkadotService {
         if (api) {
           // Wait until we are ready and connected
           await api.isReady;
-          
+
           /**
            * Query subscriptions
            * https://polkadot.js.org/docs/api/start/api.query.subs
@@ -452,10 +452,18 @@ class PolkadotService {
                         data.success = false;
                         data.finalized = true;
                       }
-                      if((event.method === 'Transfer') || (event.method === 'Bonded' && event.section === 'staking')){
-                        if(event.data.hasOwnProperty('amount')){
+                      //event for normal fund transfer and staking 
+                      if ((event.method === 'Transfer') || (event.method === 'Bonded' && event.section === 'staking')) {
+                        if (event.data.hasOwnProperty('amount')) {
                           const amount = event.data.amount;
-                          data.toUnitAmount = JSON.stringify(toUnit(amount,chainDecimals));
+                          data.toUnitAmount = JSON.stringify(toUnit(amount, chainDecimals));
+                          logger.info(`amount:::::::::: ${data.toUnitAmount}`);
+                        }
+                      //event for treasury deposit
+                      } else if (event.method === 'Deposit' && event.section === 'treasury') {
+                        if (event.data.hasOwnProperty('value')) {
+                          const value = event.data.value;
+                          data.toUnitAmount = JSON.stringify(toUnit(value, chainDecimals));
                           logger.info(`amount:::::::::: ${data.toUnitAmount}`);
                         }
                       }
@@ -465,7 +473,7 @@ class PolkadotService {
                         data: event.data.toHuman(),
                       };
                     });
-                    
+
                   rows.push(data);
                 }
               });
