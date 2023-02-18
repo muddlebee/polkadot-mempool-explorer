@@ -1,45 +1,26 @@
 version: '3.7'
 services:
-  web_explorer:
+  web-explorer:
     build:
       context: ./web
     environment:
       PORT: 3000
     ports:
       - 3000:3000
-    command: npm run start
+    command: yarn start
     volumes:
       - ./web:/usr/src/app
       - /usr/src/app/node_modules
-    networks:
-      - polkadot-test-net
       
-  api_explorer:
+  api-explorer:
     build:
       context: ./api
-    networks:
-      - polkadot-test-net
     environment:
       PORT: 8081
     ports:
       - 8081:8081
-    command: npm run start
+    command: yarn start
     volumes:
       - ./api:/usr/src/app
       - /usr/src/app/node_modules
-  
-##### sample configuration for running personal node#####      
-#   polkadot_westend_node:
-#     image: jarcodallo/polkadot:latest
-#     command: polkadot --chain westend --name "Cipayos 🇦🇷" --rpc-external --ws-external --rpc-cors all --in-peers 50 --out-peers 50
-#     ports:
-#       - 9966:9944
-#       - 9955:9933
-#     volumes:
-#       - ./data:/data
-#     networks:
-#       - polkadot-test-net
-
-networks:
-  polkadot-test-net:
   
