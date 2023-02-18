@@ -4,9 +4,9 @@ services:
     build:
       context: ./web
     environment:
-      PORT: 8084
+      PORT: 3000
     ports:
-      - 8084:8084
+      - 3000:3000
     command: npm run start
     volumes:
       - ./web:/usr/src/app
@@ -20,9 +20,9 @@ services:
     networks:
       - polkadot-test-net
     environment:
-      PORT: 8085
+      PORT: 8081
     ports:
-      - 8085:8085
+      - 8081:8081
     command: npm run start
     volumes:
       - ./api:/usr/src/app
