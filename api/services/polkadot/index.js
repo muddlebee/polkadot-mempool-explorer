@@ -452,34 +452,20 @@ class PolkadotService {
                         data.success = false;
                         data.finalized = true;
                       }
-
+                      if((event.method === 'Transfer') || (event.method === 'Bonded' && event.section === 'staking')){
+                        if(event.data.hasOwnProperty('amount')){
+                          const amount = event.data.amount;
+                          data.toUnitAmount = JSON.stringify(toUnit(amount,chainDecimals));
+                          logger.info(`amount:::::::::: ${data.toUnitAmount}`);
+                        }
+                      }
                       return {
                         method: event.section.toString(),
                         section: event.method.toString(),
                         data: event.data.toHuman(),
                       };
                     });
-
-
-                    // fetch the transfer amount from the events
-                    blockEvents
-                        // filter the specific events based on the phase and then the
-                        // index of our extrinsic in the block
-                        .filter(({ phase }) =>
-                          phase.isApplyExtrinsic &&
-                          phase.asApplyExtrinsic.eq(index)
-                        )
-                        // match the Transfer event
-                        .forEach(({ event }) => {
-                            if(event.method === 'Transfer'){
-                              if(event.data.hasOwnProperty('amount')){
-                                const amount = event.data.amount;
-                                data.toUnitAmount = JSON.stringify(toUnit(amount,chainDecimals));
-                                logger.info(`amount:::::::::: ${data.toUnitAmount}`);
-                              }
-                            }
-                        });
-
+                    
                   rows.push(data);
                 }
               });
