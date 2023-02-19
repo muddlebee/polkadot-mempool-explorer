@@ -14,9 +14,16 @@ import useMempoolExplorer from 'hooks/useMempoolExplorer'
 import Identicon from 'react-hooks-identicons'
 
 import theme from '../../../theme/index'
+import DownArrow from '../../icons/DownArrow.svg'
+import UpArrow from '../../icons/UpArrow.svg'
+
+interface PropType {
+  state: StateType
+}
 
 interface StateType {
   isBlockDetailHidden: boolean
+  isTransactionDetailHidden: boolean
 }
 
 const Wrapper = styled(BaseCard)`
@@ -115,6 +122,10 @@ const TimeWrapper = styled.div`
   align-self: flex-end;
 
   margin-top: 11px;
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    margin-top: 0px;
+  }
 `
 
 const Time = styled.a`
@@ -216,7 +227,7 @@ const TransferInfo = styled.div`
   min-width: 0;
 `
 
-const TransactionContainer = styled.div<StateType>`
+const TransactionContainer = styled.div<PropType>`
   width: 100%;
   aspect-ratio: 1151 / 185;
 
@@ -254,10 +265,21 @@ const TransactionContainer = styled.div<StateType>`
   }
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
-    aspect-ratio: ${(props) =>
-      props.isBlockDetailHidden ? '292 / 165' : '292 / 255'}; //292 / 255;
+    aspect-ratio: ${(props) => {
+      if (props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
+        return '292 / 84'
+      }
+      if (props.state.isBlockDetailHidden && !props.state.isTransactionDetailHidden) {
+        return '292 / 212'
+      }
+      if (!props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
+        return '292 / 165'
+      }
+      return '292 / 299'
+    }};
+    /* aspect-ratio: ${(props) => (props.state.isBlockDetailHidden ? '292 / 165' : '292 / 255')}; */
 
-    font-size: 6px;
+    font-size: 12px;
   }
 `
 const ContentWrapper = styled.div`
@@ -273,16 +295,18 @@ const ContentWrapper = styled.div`
 
   width: 94.7%;
   height: 73.43%;
-  /* position: absolute;
+  position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); */
+  transform: translate(-50%, -50%);
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     grid-template-columns: 100%;
     grid-template-rows: auto;
 
     row-gap: 4px;
+
+    height: 95.205%;
   }
 `
 
@@ -300,6 +324,8 @@ const TxHashContainer = styled.div`
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     grid-row: 3;
     grid-column: 1 / span 1;
+
+    aspect-ratio: 281 / 31;
   }
 `
 
@@ -308,6 +334,9 @@ const TxHashLabel = styled.div`
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
   //font-size: 12px;
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    width: 17.79%;
+  }
 `
 const TxHash = styled.div`
   width: 81.36%;
@@ -315,10 +344,13 @@ const TxHash = styled.div`
   color: ${(props) => props.theme.colors.infoTextColor};
   font-weight: 400;
   //font-size: 12px;
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    width: 60.49%;
+  }
 `
 
-const BalanceTransferContainer = styled.div`
-  display: flex;
+const BalanceTransferContainer = styled.div<PropType>`
+  display: ${(props) => (props.state.isTransactionDetailHidden ? 'none' : 'flex')}; //flex;
   justify-content: center;
   align-items: center;
   grid-column: 2;
@@ -346,13 +378,27 @@ const BalanceTransferAmount = styled.div`
   font-weight: 700;
 `
 const DetailsToggleBtn = styled.div`
+  position: relative;
   display: none;
   width: 100%;
   height: 15px;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     display: block;
+    grid-row: 5;
   }
+`
+const ShowDetails = styled.div`
+  position: absolute;
+
+  left: 50%;
+  transform: translateX(-50%);
+`
+const HideDetails = styled.div`
+  position: absolute;
+
+  left: 50%;
+  transform: translateX(-50%);
 `
 
 const AdditionalInfoContainer = styled.div`
@@ -363,12 +409,15 @@ const AdditionalInfoContainer = styled.div`
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     flex-direction: column-reverse;
+    justify-content: space-between;
     grid-row: 4;
+
+    width: 100%;
     height: fit-content;
   }
 `
 
-const HorizontalStripContainer = styled.div<StateType>`
+const HorizontalStripContainer = styled.div<PropType>`
   display: grid;
 
   grid-template-columns: repeat(4, 1fr);
@@ -378,12 +427,14 @@ const HorizontalStripContainer = styled.div<StateType>`
   height: 67.045%;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
-    display: ${(props) => (props.isBlockDetailHidden ? 'none' : 'grid')};
+    display: ${(props) => (props.state.isBlockDetailHidden ? 'none' : 'grid')};
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
 
     column-gap: 4px;
     row-gap: 5px;
+
+    margin-top: 8px;
   }
 `
 
@@ -399,16 +450,21 @@ const HorizontalStrip = styled.div`
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 `
 const HorizontalStripLabel = styled.div`
+  margin-top: 12px;
+  margin-left: 16px;
+
   color: ${(props) => props.theme.cards.mediumBlack};
   font-weight: 600;
 `
 const HorizontalStripText = styled.div`
+  margin-left: 16px;
+
   color: ${(props) => props.theme.colors.infoTextColor};
   font-weight: 400;
 `
-const MiniCardContainer = styled.div`
+const MiniCardContainer = styled.div<PropType>`
   position: relative;
-  display: grid;
+  display: ${(props) => (props.state.isTransactionDetailHidden ? 'none' : 'grid')}; //grid;
 
   grid-template-columns: 1fr 1fr;
   column-gap: 2.67%;
@@ -485,7 +541,6 @@ interface Props {
 }
 
 export const Transaction: React.FC<Props> = (props) => {
-  const [state, setState] = useState<StateType>({ isBlockDetailHidden: false })
   const { data, ...restProps } = props
   const {
     balance_transfer: balanceTransfer,
@@ -499,6 +554,10 @@ export const Transaction: React.FC<Props> = (props) => {
     type,
     update_at: updateAt,
   } = data
+  const [state, setState] = useState<StateType>({
+    isBlockDetailHidden: false,
+    isTransactionDetailHidden: type === 'Inherent',
+  })
   const { selectedNetwork } = useMempoolExplorer()
   const result = isValid ? 'Valid' : 'Invalid'
   const explorerURL = `https://${selectedNetwork.id}.subscan.io/`
@@ -514,11 +573,19 @@ export const Transaction: React.FC<Props> = (props) => {
   senderBrokenUid += '...'
 
   if (!(to === undefined || to === null || to === '')) {
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 10; i++) {
       receiverBrokenUid += to[i]
     }
     receiverBrokenUid += '...'
   }
+
+  let brokenTxHash = ''
+  for (let i = 0; i < 11; i++) {
+    brokenTxHash += hash[i]
+  }
+  brokenTxHash += '...'
+  const txHashToBeDisplayed =
+    window.screen.width <= parseInt(theme.themeBreakPoints.sm) ? brokenTxHash : hash
 
   // console.log('receiver broken uid')
   // console.log(receiverBrokenUid)
@@ -540,13 +607,10 @@ export const Transaction: React.FC<Props> = (props) => {
   }
 
   return (
-    <TransactionContainer
-      className={isFinalized ? 'justRemoved' : 'inMempool'}
-      isBlockDetailHidden={state.isBlockDetailHidden}
-    >
+    <TransactionContainer className={isFinalized ? 'justRemoved' : 'inMempool'} state={state}>
       <ContentWrapper>
         <TxHashContainer>
-          <TxHashLabel>Tx Hash:</TxHashLabel> <TxHash>{hash}</TxHash>
+          <TxHashLabel>Tx Hash:</TxHashLabel> <TxHash>{txHashToBeDisplayed}</TxHash>
           <ButtonCopy value={hash} />
           <ButtonExternalLink
             href={`${extrinsicURL}${hash}`}
@@ -557,15 +621,13 @@ export const Transaction: React.FC<Props> = (props) => {
           />
         </TxHashContainer>
 
-        {type !== 'Inherent' && (
-          <BalanceTransferContainer>
-            <BalanceTransferLabel>Balance Transfer:</BalanceTransferLabel>
-            <BalanceTransferAmount>{balanceTransfer}</BalanceTransferAmount>
-          </BalanceTransferContainer>
-        )}
+        <BalanceTransferContainer state={state}>
+          <BalanceTransferLabel>Balance Transfer:</BalanceTransferLabel>
+          <BalanceTransferAmount>{balanceTransfer}</BalanceTransferAmount>
+        </BalanceTransferContainer>
 
         <AdditionalInfoContainer>
-          <HorizontalStripContainer isBlockDetailHidden={state.isBlockDetailHidden}>
+          <HorizontalStripContainer state={state}>
             <HorizontalStrip>
               <HorizontalStripLabel>Block Number:</HorizontalStripLabel>
               <HorizontalStripText>{'#' + blockNumber}</HorizontalStripText>
@@ -592,62 +654,71 @@ export const Transaction: React.FC<Props> = (props) => {
           </TimeWrapper>
         </AdditionalInfoContainer>
 
-        {type !== 'Inherent' && (
-          <MiniCardContainer>
-            <MiniCard>
-              <ProfileContainer>
-                <UserDP>{<Identicon bg="#000000" count="5" size="70" string={from} />}</UserDP>
-                <UserDesignationLabel>From</UserDesignationLabel>
-                <UserUID>{senderBrokenUid}</UserUID>
-              </ProfileContainer>
+        <MiniCardContainer state={state}>
+          <MiniCard>
+            <ProfileContainer>
+              <UserDP>{<Identicon bg="#000000" count="5" size="70" string={from} />}</UserDP>
+              <UserDesignationLabel>From</UserDesignationLabel>
+              <UserUID>{senderBrokenUid}</UserUID>
+            </ProfileContainer>
 
-              <CopyAndExternalLinkContainer>
-                <ButtonCopy value={from} />
-                <ButtonExternalLink
-                  href={`${accountURL}${from}`}
-                  style={{
-                    marginLeft: '5px',
-                    marginRight: '0px',
-                  }}
-                />
-              </CopyAndExternalLinkContainer>
-            </MiniCard>
-
-            <MiniCard>
-              <ProfileContainer>
-                <UserDP>{<Identicon bg="#000000" count="5" size="70" string={to} />}</UserDP>
-                <UserDesignationLabel>To</UserDesignationLabel>
-                <UserUID>{receiverBrokenUid}</UserUID>
-              </ProfileContainer>
-
-              <CopyAndExternalLinkContainer>
-                <ButtonCopy value={to} />
-                <ButtonExternalLink
-                  href={`${accountURL}${to}`}
-                  style={{
-                    marginLeft: '5px',
-                    marginRight: '0px',
-                  }}
-                />
-              </CopyAndExternalLinkContainer>
-            </MiniCard>
-
-            <TransferArrowContainer>
-              <TransferArrow
+            <CopyAndExternalLinkContainer>
+              <ButtonCopy value={from} />
+              <ButtonExternalLink
+                href={`${accountURL}${from}`}
                 style={{
-                  position: 'relative',
-                  width: '65%',
-
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, 0%)',
+                  marginLeft: '5px',
+                  marginRight: '0px',
                 }}
               />
-            </TransferArrowContainer>
-          </MiniCardContainer>
-        )}
+            </CopyAndExternalLinkContainer>
+          </MiniCard>
 
-        <DetailsToggleBtn onClick={onDetailToggleBtnClicked}>Details</DetailsToggleBtn>
+          <MiniCard>
+            <ProfileContainer>
+              <UserDP>{<Identicon bg="#000000" count="5" size="70" string={to} />}</UserDP>
+              <UserDesignationLabel>To</UserDesignationLabel>
+              <UserUID>{receiverBrokenUid}</UserUID>
+            </ProfileContainer>
+
+            <CopyAndExternalLinkContainer>
+              <ButtonCopy value={to} />
+              <ButtonExternalLink
+                href={`${accountURL}${to}`}
+                style={{
+                  marginLeft: '5px',
+                  marginRight: '0px',
+                }}
+              />
+            </CopyAndExternalLinkContainer>
+          </MiniCard>
+
+          <TransferArrowContainer>
+            <TransferArrow
+              style={{
+                position: 'relative',
+                width: '65%',
+
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, 0%)',
+              }}
+            />
+          </TransferArrowContainer>
+        </MiniCardContainer>
+
+        <DetailsToggleBtn onClick={onDetailToggleBtnClicked}>
+          {state.isBlockDetailHidden && (
+            <ShowDetails>
+              More Details <img alt="I" src={DownArrow} />
+            </ShowDetails>
+          )}
+          {!state.isBlockDetailHidden && (
+            <HideDetails>
+              <img alt="I" src={UpArrow} />
+            </HideDetails>
+          )}
+        </DetailsToggleBtn>
       </ContentWrapper>
     </TransactionContainer>
   )
