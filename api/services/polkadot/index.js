@@ -2,7 +2,7 @@
  * Module dependencies
  */
 const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { BN } = require('@polkadot/util');
+const { BN , formatBalance} = require('@polkadot/util');
 
 const { DEVELOPMENT, FETCH_PENDING_EXTRINSICS_DELAY } = require('../../env');
 const {
@@ -415,6 +415,7 @@ class PolkadotService {
               const { block } = await api.rpc.chain.getBlock(blockHash);
               const blockEvents = await api.query.system.events.at(header.hash);
               const chainDecimals = await api.registry.chainDecimals[0];
+              const unit = await api.registry.chainTokens[0];
 
               const rows = [];
 
@@ -456,14 +457,14 @@ class PolkadotService {
                       if ((event.method === 'Transfer') || (event.method === 'Bonded' && event.section === 'staking')) {
                         if (event.data.hasOwnProperty('amount')) {
                           const amount = event.data.amount;
-                          data.toUnitAmount = JSON.stringify(toUnit(amount, chainDecimals));
+                          data.toUnitAmount = formatBalance(amount, {withUnit:unit,decimals:chainDecimals });
                           logger.info(`amount:::::::::: ${data.toUnitAmount}`);
                         }
                       //event for treasury deposit
                       } else if (event.method === 'Deposit' && event.section === 'treasury') {
                         if (event.data.hasOwnProperty('value')) {
                           const value = event.data.value;
-                          data.toUnitAmount = JSON.stringify(toUnit(value, chainDecimals));
+                          data.toUnitAmount = formatBalance(value, {withUnit:unit,decimals:chainDecimals });
                           logger.info(`amount:::::::::: ${data.toUnitAmount}`);
                         }
                       }
