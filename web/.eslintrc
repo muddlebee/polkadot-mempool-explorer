@@ -57,7 +57,6 @@
         "ignoreDeclarationSort": true
       }
     ],
-    "semi": ["error", "never"],
     "no-warning-comments": "warn",
     "import/extensions": 0,
     "import/no-unresolved": 0,
