@@ -179,11 +179,7 @@ export const ExplorerProvider: React.FC = ({ children }) => {
     })
 
     try {
-      const { data } = await axios.get('/networks', {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-      })
+      const { data } = await axios.get('/networks')
 
       dispatch({
         type: SET_NETWORKS_ACTION,
@@ -223,11 +219,7 @@ export const ExplorerProvider: React.FC = ({ children }) => {
     })
 
     try {
-      const { data } = await axios.get(`/transactions/${networkId}`, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-      })
+      const { data } = await axios.get(`/transactions/${networkId}`)
 
       dispatch({
         type: SET_TRANSACTIONS_ACTION,
