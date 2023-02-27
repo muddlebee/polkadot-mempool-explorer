@@ -121,7 +121,7 @@ const TimeWrapper = styled.div`
   display: flex;
   align-self: flex-end;
 
-  margin-top: 11px;
+  margin-top: 20px;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     margin-top: 0px;
@@ -228,8 +228,9 @@ const TransferInfo = styled.div`
 `
 
 const TransactionContainer = styled.div<PropType>`
-  width: 100%;
-  aspect-ratio: 1151 / 185;
+  width: ${(props) => (props.state.isTransactionDetailHidden ? '63.5%' : '100%')}; //100%;
+  aspect-ratio: ${(props) =>
+    props.state.isTransactionDetailHidden ? '733 / 149' : '1147 / 149'}; //1147 / 149;//1151 / 185;
 
   margin-bottom: 20px;
 
@@ -282,12 +283,13 @@ const TransactionContainer = styled.div<PropType>`
     font-size: 12px;
   }
 `
-const ContentWrapper = styled.div`
+const ContentWrapper = styled.div<PropType>`
   display: grid;
 
   /* grid-template-rows: 29.57% 1fr; */
   grid-template-rows: 1fr 61.26%;
-  grid-template-columns: 65.504% 1fr;
+  grid-template-columns: ${(props) =>
+    props.state.isTransactionDetailHidden ? '1fr' : '62.364% 1fr'}; //62.364% 1fr;//65.504% 1fr;
   /* grid-template-columns: 0.655fr 0.3082fr; */
 
   column-gap: 3.475%;
@@ -330,7 +332,7 @@ const TxHashContainer = styled.div`
 `
 
 const TxHashLabel = styled.div`
-  width: 8.123%;
+  width: 10.123%;
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
   //font-size: 12px;
@@ -477,22 +479,24 @@ const MiniCardContainer = styled.div<PropType>`
 const TransferArrowContainer = styled.div`
   position: absolute;
 
-  width: 7.121%;
+  width: 11.121%;
 
-  top: 14.77%;
+  top: 47.77%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
 
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0);
   border-radius: 50%;
 `
 
 const MiniCard = styled.div`
-  padding-top: 7px;
+  position: relative;
+  height: 86%;
+  /* padding-top: 7px;
   padding-bottom: 9px;
   padding-left: 5px;
-  padding-right: 5px;
+  padding-right: 5px; */
 
   border-radius: 5px;
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
@@ -501,20 +505,26 @@ const CopyAndExternalLinkContainer = styled.div`
   display: flex;
   justify-content: flex-end;
 
-  margin-top: 7px;
+  margin-top: -20px;
 `
 const ProfileContainer = styled.div`
+  position: absolute;
   display: grid;
   grid-template-rows: 50% 50%;
   grid-template-columns: 27.27% 1fr;
   column-gap: 4%;
 
-  width: 100%;
-  height: 53.4%;
+  width: 91.57%;
+  height: 66.66%; //53.4%;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `
 const UserDP = styled.div`
   grid-row: 1 / span 2;
-  width: 100%;
+  //width: 100%;
+  height: 100%;
   aspect-ratio: 1;
 
   border-radius: 50%;
@@ -589,6 +599,8 @@ export const Transaction: React.FC<Props> = (props) => {
 
   // console.log('receiver broken uid')
   // console.log(receiverBrokenUid)
+  console.log('type = ' + type)
+  console.log(type === 'Inherent')
 
   const onDetailToggleBtnClicked = () => {
     console.log('CLicked it')
@@ -608,7 +620,7 @@ export const Transaction: React.FC<Props> = (props) => {
 
   return (
     <TransactionContainer className={isFinalized ? 'justRemoved' : 'inMempool'} state={state}>
-      <ContentWrapper>
+      <ContentWrapper state={state}>
         <TxHashContainer>
           <TxHashLabel>Tx Hash:</TxHashLabel> <TxHash>{txHashToBeDisplayed}</TxHash>
           <ButtonCopy value={hash} />
@@ -658,11 +670,23 @@ export const Transaction: React.FC<Props> = (props) => {
           <MiniCard>
             <ProfileContainer>
               <UserDP>{<Identicon bg="#000000" count="5" size="70" string={from} />}</UserDP>
-              <UserDesignationLabel>From</UserDesignationLabel>
+              <UserDesignationLabel>
+                From
+                <CopyAndExternalLinkContainer>
+                  <ButtonCopy value={from} />
+                  <ButtonExternalLink
+                    href={`${accountURL}${from}`}
+                    style={{
+                      marginLeft: '5px',
+                      marginRight: '0px',
+                    }}
+                  />
+                </CopyAndExternalLinkContainer>
+              </UserDesignationLabel>
               <UserUID>{senderBrokenUid}</UserUID>
             </ProfileContainer>
 
-            <CopyAndExternalLinkContainer>
+            {/* <CopyAndExternalLinkContainer>
               <ButtonCopy value={from} />
               <ButtonExternalLink
                 href={`${accountURL}${from}`}
@@ -671,17 +695,29 @@ export const Transaction: React.FC<Props> = (props) => {
                   marginRight: '0px',
                 }}
               />
-            </CopyAndExternalLinkContainer>
+            </CopyAndExternalLinkContainer> */}
           </MiniCard>
 
           <MiniCard>
             <ProfileContainer>
               <UserDP>{<Identicon bg="#000000" count="5" size="70" string={to} />}</UserDP>
-              <UserDesignationLabel>To</UserDesignationLabel>
+              <UserDesignationLabel>
+                To
+                <CopyAndExternalLinkContainer>
+                  <ButtonCopy value={to} />
+                  <ButtonExternalLink
+                    href={`${accountURL}${to}`}
+                    style={{
+                      marginLeft: '5px',
+                      marginRight: '0px',
+                    }}
+                  />
+                </CopyAndExternalLinkContainer>
+              </UserDesignationLabel>
               <UserUID>{receiverBrokenUid}</UserUID>
             </ProfileContainer>
 
-            <CopyAndExternalLinkContainer>
+            {/* <CopyAndExternalLinkContainer>
               <ButtonCopy value={to} />
               <ButtonExternalLink
                 href={`${accountURL}${to}`}
@@ -690,7 +726,7 @@ export const Transaction: React.FC<Props> = (props) => {
                   marginRight: '0px',
                 }}
               />
-            </CopyAndExternalLinkContainer>
+            </CopyAndExternalLinkContainer> */}
           </MiniCard>
 
           <TransferArrowContainer>
