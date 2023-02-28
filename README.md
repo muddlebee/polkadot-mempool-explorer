@@ -14,6 +14,10 @@ Mempool Explorer allow users to monitor pending transactions on [Polkadot](https
  - nvm install 14
  - npm install -g win-node-env
 
+ ### Deploying in Linux(ubuntu 20)
+ - https://github.com/muddlebee/dotfiles/blob/master/ubuntu-20/utility-nodejs.sh
+ - add IP in .env file
+
 
 ## Get Started
 
