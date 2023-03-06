@@ -266,6 +266,7 @@ const TransactionContainer = styled.div<PropType>`
   }
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    width: 100%;
     aspect-ratio: ${(props) => {
       if (props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
         return '292 / 84'
@@ -274,7 +275,7 @@ const TransactionContainer = styled.div<PropType>`
         return '292 / 212'
       }
       if (!props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
-        return '292 / 165'
+        return '292 / 175'
       }
       return '292 / 299'
     }};
@@ -306,7 +307,7 @@ const ContentWrapper = styled.div<PropType>`
     grid-template-columns: 100%;
     grid-template-rows: auto;
 
-    row-gap: 4px;
+    row-gap: 0px;
 
     height: 95.205%;
   }
@@ -383,7 +384,7 @@ const DetailsToggleBtn = styled.div`
   position: relative;
   display: none;
   width: 100%;
-  height: 15px;
+  aspect-ratio: 100 / 10;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     display: block;
@@ -474,6 +475,8 @@ const MiniCardContainer = styled.div<PropType>`
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     grid-row: 2;
     column-gap: 4px;
+
+    aspect-ratio: 273 / 40;
   }
 `
 const TransferArrowContainer = styled.div`
