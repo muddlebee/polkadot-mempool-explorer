@@ -13,7 +13,7 @@ export const InnerContainer = styled.div`
 
   @media (min-width: ${(props) => props.theme.themeBreakPoints.xxxl}) {
     max-width: ${(props) => {
-      return `${(85 / 100) * document.getElementsByTagName('html')[0].offsetWidth}px`
+      return `${(72 / 100) * document.getElementsByTagName('html')[0].offsetWidth}px`
     }};
   }
 `

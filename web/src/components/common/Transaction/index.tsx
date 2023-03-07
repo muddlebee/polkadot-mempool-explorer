@@ -257,6 +257,10 @@ const TransactionContainer = styled.div<PropType>`
     border-color: ${(props) => props.theme.colors.mediumGrey};
   }
 
+  @media (min-width: ${(props) => props.theme.themeBreakPoints.xxxl}) {
+    font-size: 14px;
+  }
+
   @media (max-width: ${(props) => props.theme.themeBreakPoints.xl}) {
     font-size: 10px;
   }
