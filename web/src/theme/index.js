@@ -111,6 +111,7 @@ const theme = {
     xs: '320px',
     xxl: '1280px',
     xxxl: '1366px',
+    superLarge: '1900px',
   },
 }
 
