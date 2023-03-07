@@ -10,4 +10,10 @@ export const InnerContainer = styled.div`
   padding-left: ${(props) => props.theme.layout.horizontalPadding};
   padding-right: ${(props) => props.theme.layout.horizontalPadding};
   width: 100%;
+
+  @media (min-width: ${(props) => props.theme.themeBreakPoints.xxxl}) {
+    max-width: ${(props) => {
+      return `${(85 / 100) * document.getElementsByTagName('html')[0].offsetWidth}px`
+    }};
+  }
 `
