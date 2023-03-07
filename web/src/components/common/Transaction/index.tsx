@@ -257,8 +257,12 @@ const TransactionContainer = styled.div<PropType>`
     border-color: ${(props) => props.theme.colors.mediumGrey};
   }
 
-  @media (min-width: ${(props) => props.theme.themeBreakPoints.xxxl}) {
+  @media (min-width: ${(props) => props.theme.themeBreakPoints.superLarge}) {
     font-size: 14px;
+  }
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.xxl}) {
+    font-size: 11px;
   }
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.xl}) {
@@ -337,7 +341,8 @@ const TxHashContainer = styled.div`
 `
 
 const TxHashLabel = styled.div`
-  width: 10.123%;
+  flex-shrink: 0;
+  width: fit-content;
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
   //font-size: 12px;
@@ -358,7 +363,7 @@ const TxHash = styled.div`
 
 const BalanceTransferContainer = styled.div<PropType>`
   display: ${(props) => (props.state.isTransactionDetailHidden ? 'none' : 'flex')}; //flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   grid-column: 2;
 
@@ -374,13 +379,16 @@ const BalanceTransferContainer = styled.div<PropType>`
   }
 `
 const BalanceTransferLabel = styled.div`
-  width: 36.65%;
+  margin-left: 2.58%;
+  width: fit-content;
+
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
 `
 const BalanceTransferAmount = styled.div`
-  width: 25%;
-  margin-left: 4px;
+  width: fit-content;
+  margin-left: 1.033%;
+
   color: ${(props) => props.theme.colors.primary};
   font-weight: 700;
 `
@@ -457,17 +465,17 @@ const HorizontalStrip = styled.div`
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 `
 const HorizontalStripLabel = styled.div`
-  margin-top: 12px;
+  margin-top: 6%;
   margin-left: 16px;
 
   color: ${(props) => props.theme.cards.mediumBlack};
-  font-weight: 600;
+  font-weight: 400;
 `
 const HorizontalStripText = styled.div`
   margin-left: 16px;
 
   color: ${(props) => props.theme.colors.infoTextColor};
-  font-weight: 400;
+  font-weight: 600;
 `
 const MiniCardContainer = styled.div<PropType>`
   position: relative;
