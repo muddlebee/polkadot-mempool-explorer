@@ -215,9 +215,9 @@ export const NodeButton: React.FC = (props) => {
               </CustomDropdownItem>
             ))}
           </ItemsWrapper>,
-          <ButtonWrapper key="ButtonWrapper">
-            <ButtonAdd onClick={() => setIsModalOpen(true)}>Add Node</ButtonAdd>
-          </ButtonWrapper>,
+          // <ButtonWrapper key="ButtonWrapper">
+          //   <ButtonAdd onClick={() => setIsModalOpen(true)}>Add Node</ButtonAdd>
+          // </ButtonWrapper>,
         ]}
         {...restProps}
       />

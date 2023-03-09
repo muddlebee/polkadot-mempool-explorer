@@ -242,10 +242,11 @@ const TransactionContainer = styled.div<PropType>`
   position: relative;
 
   font-size: 12px;
+  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.1);
   border-style: solid;
-  border-width: 0;
+  border-width: 0.1px;
   border-left-width: 6px;
-  border-radius: 14px;
+  border-radius: 5px;
   border-color: ${(props) => props.theme.colors.primary};
   background-color: ${(props) => props.theme.cards.backgroundColor};
 
@@ -454,6 +455,10 @@ const HorizontalStripContainer = styled.div<PropType>`
 `
 
 const HorizontalStrip = styled.div`
+  display: flex;
+  flex-direction: column;
+  row-gap: 1%;
+  justify-content: center;
   height: 100%;
   aspect-ratio: 168.35 / 59;
   max-width: 100%;
@@ -465,13 +470,14 @@ const HorizontalStrip = styled.div`
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 `
 const HorizontalStripLabel = styled.div`
-  margin-top: 6%;
+  /* margin-top: 9%; */
   margin-left: 16px;
 
   color: ${(props) => props.theme.cards.mediumBlack};
   font-weight: 400;
 `
 const HorizontalStripText = styled.div`
+  // margin-bottom: 9%;
   margin-left: 16px;
 
   color: ${(props) => props.theme.colors.infoTextColor};

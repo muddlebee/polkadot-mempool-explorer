@@ -43,7 +43,7 @@ const theme = {
     colorHover: '#fff',
   },
   cards: {
-    textContainerBackgroundColor: '#ECECEC',
+    textContainerBackgroundColor: lightGrey, //'#ECECEC',
     backgroundColor: '#fff',
     borderRadius: '4px ',
     boxShadow: '0 0 15px 0 rgba(0, 0, 0, 0.05)',
@@ -58,6 +58,7 @@ const theme = {
     iconBackgroundColor: '#D9D9D9',
     infoTextColor: 'rgba(0, 0, 0, 0.7)',
     lightBlack: 'rgba(56, 56, 56, 0.9)',
+    lightGrey: lightGrey,
     mainBodyBackground: '#F8F9FA',
     mediumBlack: 'rgba(0, 0, 0, 0.8)',
     mediumGrey: mediumGrey,
