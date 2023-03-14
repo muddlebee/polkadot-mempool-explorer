@@ -115,15 +115,20 @@ const LinkValue = styled.a`
     text-decoration: underline;
   }
 `
+interface TimeWrapperProps {
+  isHidden: boolean
+}
 
-const TimeWrapper = styled.div`
+const TimeWrapper = styled.div<TimeWrapperProps>`
   align-items: center;
-  display: flex;
+  display: ${(props) => (props.isHidden ? 'none' : 'flex')};
   align-self: flex-end;
 
   margin-top: 20px;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    justify-self: end;
+    grid-row: 5;
     margin-top: 0px;
   }
 `
@@ -284,9 +289,9 @@ const TransactionContainer = styled.div<PropType>`
         return '292 / 212'
       }
       if (!props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
-        return '292 / 175'
+        return '292 / 150'
       }
-      return '292 / 299'
+      return '292 / 224'
     }};
     /* aspect-ratio: ${(props) => (props.state.isBlockDetailHidden ? '292 / 165' : '292 / 255')}; */
 
@@ -314,11 +319,11 @@ const ContentWrapper = styled.div<PropType>`
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
     grid-template-columns: 100%;
-    grid-template-rows: auto;
+    grid-template-rows: none;
 
     row-gap: 0px;
 
-    height: 95.205%;
+    height: ${(props) => (props.state.isTransactionDetailHidden ? '92.66%' : '94.16%')};
   }
 `
 
@@ -334,10 +339,10 @@ const TxHashContainer = styled.div`
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
-    grid-row: 3;
+    grid-row: 1;
     grid-column: 1 / span 1;
 
-    aspect-ratio: 281 / 31;
+    aspect-ratio: 281 / 27;
   }
 `
 
@@ -373,10 +378,13 @@ const BalanceTransferContainer = styled.div<PropType>`
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
-    grid-row: 1;
+    position: relative;
+    grid-row: 3;
     grid-column: 1 / span 1;
 
-    aspect-ratio: 274 / 30;
+    aspect-ratio: 281 / 30;
+
+    top: 0%;
   }
 `
 const BalanceTransferLabel = styled.div`
@@ -385,6 +393,10 @@ const BalanceTransferLabel = styled.div`
 
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    margin-left: 5%;
+  }
 `
 const BalanceTransferAmount = styled.div`
   width: fit-content;
@@ -424,9 +436,9 @@ const AdditionalInfoContainer = styled.div`
   grid-column: 1;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
-    flex-direction: column-reverse;
-    justify-content: space-between;
-    grid-row: 4;
+    /* flex-direction: column-reverse;
+    justify-content: space-between; */
+    grid-row: 2;
 
     width: 100%;
     height: fit-content;
@@ -468,6 +480,10 @@ const HorizontalStrip = styled.div`
 
   border-radius: 5px;
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    aspect-ratio: 134 / 40;
+  }
 `
 const HorizontalStripLabel = styled.div`
   /* margin-top: 9%; */
@@ -491,7 +507,7 @@ const MiniCardContainer = styled.div<PropType>`
   column-gap: 2.67%;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
-    grid-row: 2;
+    grid-row: 4;
     column-gap: 4px;
 
     aspect-ratio: 273 / 40;
@@ -550,6 +566,10 @@ const UserDP = styled.div`
 
   border-radius: 50%;
   overflow: hidden;
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    margin-left: 21%;
+  }
 `
 const UserDesignationLabel = styled.div`
   grid-row: 1;
@@ -596,22 +616,26 @@ export const Transaction: React.FC<Props> = (props) => {
   const extrinsicURL = `${explorerURL}extrinsic/`
   const accountURL = `${explorerURL}account/`
 
+  let isLandscapeMode = false
+  const htmlTag = document.getElementsByTagName('html')[0]
+  if (htmlTag.clientWidth > htmlTag.clientHeight) isLandscapeMode = true
+
   let senderBrokenUid = ''
   let receiverBrokenUid = ''
-  for (let i = 0; i < 11; i++) {
+  for (let i = 0; i < 9; i++) {
     senderBrokenUid += from[i]
   }
   senderBrokenUid += '...'
 
   if (!(to === undefined || to === null || to === '')) {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 9; i++) {
       receiverBrokenUid += to[i]
     }
     receiverBrokenUid += '...'
   }
 
   let brokenTxHash = ''
-  for (let i = 0; i < 11; i++) {
+  for (let i = 0; i < 23; i++) {
     brokenTxHash += hash[i]
   }
   brokenTxHash += '...'
@@ -679,7 +703,7 @@ export const Transaction: React.FC<Props> = (props) => {
             </HorizontalStrip>
           </HorizontalStripContainer>
 
-          <TimeWrapper>
+          <TimeWrapper isHidden={!isLandscapeMode}>
             <TimeIcon />
             <Time href={`${extrinsicURL}${hash}`} target="_blank">
               {updateAt}
@@ -764,7 +788,14 @@ export const Transaction: React.FC<Props> = (props) => {
           </TransferArrowContainer>
         </MiniCardContainer>
 
-        <DetailsToggleBtn onClick={onDetailToggleBtnClicked}>
+        <TimeWrapper isHidden={isLandscapeMode}>
+          <TimeIcon />
+          <Time href={`${extrinsicURL}${hash}`} target="_blank">
+            {updateAt}
+          </Time>
+        </TimeWrapper>
+
+        {/* <DetailsToggleBtn onClick={onDetailToggleBtnClicked}>
           {state.isBlockDetailHidden && (
             <ShowDetails>
               More Details <img alt="I" src={DownArrow} />
@@ -775,7 +806,7 @@ export const Transaction: React.FC<Props> = (props) => {
               <img alt="I" src={UpArrow} />
             </HideDetails>
           )}
-        </DetailsToggleBtn>
+        </DetailsToggleBtn> */}
       </ContentWrapper>
     </TransactionContainer>
   )
@@ -791,7 +822,7 @@ export const Transaction: React.FC<Props> = (props) => {
           <ButtonCopy value={hash} />
           <ButtonExternalLink href={`${extrinsicURL}${hash}`} style={{ marginLeft: '2px' }} />
         </TitleRow>
-        <TimeWrapper>
+        <TimeWrapper isHidden={true}>
           <TimeIcon />
           <Time href={`${extrinsicURL}${hash}`} target="_blank">
             {updateAt}
