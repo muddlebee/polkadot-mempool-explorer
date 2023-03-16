@@ -291,7 +291,7 @@ const TransactionContainer = styled.div<PropType>`
       if (!props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
         return '292 / 150'
       }
-      return '292 / 224'
+      return '292 / 240'
     }};
     /* aspect-ratio: ${(props) => (props.state.isBlockDetailHidden ? '292 / 165' : '292 / 255')}; */
 
@@ -310,7 +310,7 @@ const ContentWrapper = styled.div<PropType>`
   column-gap: 3.475%;
   row-gap: 6.25%;
 
-  width: 94.7%;
+  width: ${(props) => (props.state.isTransactionDetailHidden ? '94.27%' : '96.59%')};
   height: 73.43%;
   position: absolute;
   top: 50%;
@@ -318,10 +318,15 @@ const ContentWrapper = styled.div<PropType>`
   transform: translate(-50%, -50%);
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    position: absolute;
     grid-template-columns: 100%;
     grid-template-rows: none;
 
     row-gap: 0px;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     height: ${(props) => (props.state.isTransactionDetailHidden ? '92.66%' : '94.16%')};
   }
@@ -384,7 +389,7 @@ const BalanceTransferContainer = styled.div<PropType>`
 
     aspect-ratio: 281 / 30;
 
-    top: 0%;
+    top: 30%;
   }
 `
 const BalanceTransferLabel = styled.div`
@@ -429,16 +434,19 @@ const HideDetails = styled.div`
   transform: translateX(-50%);
 `
 
-const AdditionalInfoContainer = styled.div`
+const AdditionalInfoContainer = styled.div<PropType>`
   display: flex;
   flex-direction: column;
   grid-row: 2;
   grid-column: 1;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    position: relative;
     /* flex-direction: column-reverse;
     justify-content: space-between; */
     grid-row: 2;
+
+    top: ${(props) => (props.state.isTransactionDetailHidden ? '6%' : '2%')};
 
     width: 100%;
     height: fit-content;
@@ -462,7 +470,7 @@ const HorizontalStripContainer = styled.div<PropType>`
     column-gap: 4px;
     row-gap: 5px;
 
-    margin-top: 8px;
+    /* margin-top: 8px; */
   }
 `
 
@@ -507,10 +515,13 @@ const MiniCardContainer = styled.div<PropType>`
   column-gap: 2.67%;
 
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    position: relative;
     grid-row: 4;
     column-gap: 4px;
 
     aspect-ratio: 273 / 40;
+
+    top: 19%;
   }
 `
 const TransferArrowContainer = styled.div`
@@ -683,7 +694,7 @@ export const Transaction: React.FC<Props> = (props) => {
           <BalanceTransferAmount>{balanceTransfer}</BalanceTransferAmount>
         </BalanceTransferContainer>
 
-        <AdditionalInfoContainer>
+        <AdditionalInfoContainer state={state}>
           <HorizontalStripContainer state={state}>
             <HorizontalStrip>
               <HorizontalStripLabel>Block Number:</HorizontalStripLabel>
