@@ -279,7 +279,31 @@ const TransactionContainer = styled.div<PropType>`
     font-size: 8px;
   }
 
+  @media (max-aspect-ratio: ${(props) => props.theme.aspectRatio.potrait}) and (max-width: ${(
+      props
+    ) => props.theme.themeBreakPoints.lg}) {
+    font-size: 25px;
+  }
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.md}) {
+    font-size: 14px;
+  }
+
+  @media (max-aspect-ratio: ${(props) => props.theme.aspectRatio.potrait}) and (max-width: ${(
+      props
+    ) => props.theme.themeBreakPoints.md}) {
+    font-size: 25px;
+  }
+
   @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+    font-size: 12px;
+  }
+
+  @media (max-width: ${(props) => props.theme.themeBreakPoints.xs}) {
+    font-size: 8px;
+  }
+
+  @media (max-aspect-ratio: ${(props) => props.theme.aspectRatio.potrait}) {
     width: 100%;
     aspect-ratio: ${(props) => {
       if (props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
@@ -294,8 +318,6 @@ const TransactionContainer = styled.div<PropType>`
       return '292 / 240'
     }};
     /* aspect-ratio: ${(props) => (props.state.isBlockDetailHidden ? '292 / 165' : '292 / 255')}; */
-
-    font-size: 12px;
   }
 `
 const ContentWrapper = styled.div<PropType>`
@@ -317,7 +339,7 @@ const ContentWrapper = styled.div<PropType>`
   left: 50%;
   transform: translate(-50%, -50%);
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     position: absolute;
     grid-template-columns: 100%;
     grid-template-rows: none;
@@ -343,7 +365,7 @@ const TxHashContainer = styled.div`
 
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     grid-row: 1;
     grid-column: 1 / span 1;
 
@@ -357,7 +379,7 @@ const TxHashLabel = styled.div`
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
   //font-size: 12px;
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     width: 17.79%;
   }
 `
@@ -367,7 +389,7 @@ const TxHash = styled.div`
   color: ${(props) => props.theme.colors.infoTextColor};
   font-weight: 400;
   //font-size: 12px;
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     width: 60.49%;
   }
 `
@@ -382,7 +404,7 @@ const BalanceTransferContainer = styled.div<PropType>`
 
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     position: relative;
     grid-row: 3;
     grid-column: 1 / span 1;
@@ -399,7 +421,7 @@ const BalanceTransferLabel = styled.div`
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     margin-left: 5%;
   }
 `
@@ -440,7 +462,7 @@ const AdditionalInfoContainer = styled.div<PropType>`
   grid-row: 2;
   grid-column: 1;
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     position: relative;
     /* flex-direction: column-reverse;
     justify-content: space-between; */
@@ -462,7 +484,7 @@ const HorizontalStripContainer = styled.div<PropType>`
 
   height: 67.045%;
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     display: ${(props) => (props.state.isBlockDetailHidden ? 'none' : 'grid')};
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
@@ -489,7 +511,7 @@ const HorizontalStrip = styled.div`
   border-radius: 5px;
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     aspect-ratio: 134 / 40;
   }
 `
@@ -514,7 +536,7 @@ const MiniCardContainer = styled.div<PropType>`
   grid-template-columns: 1fr 1fr;
   column-gap: 2.67%;
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     position: relative;
     grid-row: 4;
     column-gap: 4px;
@@ -578,7 +600,7 @@ const UserDP = styled.div`
   border-radius: 50%;
   overflow: hidden;
 
-  @media (max-width: ${(props) => props.theme.themeBreakPoints.sm}) {
+  @media (max-aspect-ratio: 0.75) {
     margin-left: 21%;
   }
 `
@@ -651,7 +673,7 @@ export const Transaction: React.FC<Props> = (props) => {
   }
   brokenTxHash += '...'
   const txHashToBeDisplayed =
-    window.screen.width <= parseInt(theme.themeBreakPoints.sm) ? brokenTxHash : hash
+    window.screen.width / window.screen.height <= theme.aspectRatio.potrait ? brokenTxHash : hash
 
   // console.log('receiver broken uid')
   // console.log(receiverBrokenUid)

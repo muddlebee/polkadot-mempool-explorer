@@ -61,7 +61,7 @@ const theme = {
     lightGrey: lightGrey,
     mainBodyBackground: '#F8F9FA',
     mediumBlack: 'rgba(0, 0, 0, 0.8)',
-    mediumGrey: mediumGrey,
+    mediumGrey: mediumGrey, //'#e7eaf3',//mediumGrey,
     primary: primary,
     textColor: textColor,
     tomatoRed: error,
@@ -109,10 +109,14 @@ const theme = {
     mdPre: '768px',
     sm: '480px',
     xl: '1090px',
-    xs: '320px',
+    xs: '375px',
     xxl: '1280px',
     xxxl: '1366px',
     superLarge: '1900px',
+  },
+  aspectRatio: {
+    landscape: 1.5,
+    potrait: 0.75,
   },
 }
 
