@@ -57,6 +57,7 @@ const theme = {
     error: error,
     iconBackgroundColor: '#D9D9D9',
     infoTextColor: 'rgba(0, 0, 0, 0.7)',
+    justRemovedTheme: '#e7eaf3',
     lightBlack: 'rgba(56, 56, 56, 0.9)',
     lightGrey: lightGrey,
     mainBodyBackground: '#F8F9FA',

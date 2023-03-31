@@ -22,6 +22,7 @@ interface PropType {
 }
 
 interface StateType {
+  isMobileDevice: boolean
   isBlockDetailHidden: boolean
   isTransactionDetailHidden: boolean
 }
@@ -247,7 +248,7 @@ const TransactionContainer = styled.div<PropType>`
   position: relative;
 
   font-size: 12px;
-  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
   border-style: solid;
   border-width: 0.1px;
   border-left-width: 6px;
@@ -260,7 +261,25 @@ const TransactionContainer = styled.div<PropType>`
   }
 
   &.justRemoved {
-    border-color: ${(props) => props.theme.colors.mediumGrey};
+    border-color: ${(props) => props.theme.colors.justRemovedTheme};
+  }
+
+  &.mobile-ui-mode {
+    width: 100%;
+    aspect-ratio: ${(props) => {
+      if (props.state.isMobileDevice) {
+        if (props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
+          return '292 / 84'
+        }
+        if (props.state.isBlockDetailHidden && !props.state.isTransactionDetailHidden) {
+          return '292 / 212'
+        }
+        if (!props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
+          return '292 / 150'
+        }
+        return '292 / 240'
+      }
+    }};
   }
 
   @media (min-width: ${(props) => props.theme.themeBreakPoints.superLarge}) {
@@ -303,22 +322,21 @@ const TransactionContainer = styled.div<PropType>`
     font-size: 8px;
   }
 
-  @media (max-aspect-ratio: ${(props) => props.theme.aspectRatio.potrait}) {
+  /* @media (max-aspect-ratio: ${(props) => props.theme.aspectRatio.potrait}) {
     width: 100%;
     aspect-ratio: ${(props) => {
-      if (props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
-        return '292 / 84'
-      }
-      if (props.state.isBlockDetailHidden && !props.state.isTransactionDetailHidden) {
-        return '292 / 212'
-      }
-      if (!props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
-        return '292 / 150'
-      }
-      return '292 / 240'
-    }};
-    /* aspect-ratio: ${(props) => (props.state.isBlockDetailHidden ? '292 / 165' : '292 / 255')}; */
-  }
+    if (props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
+      return '292 / 84'
+    }
+    if (props.state.isBlockDetailHidden && !props.state.isTransactionDetailHidden) {
+      return '292 / 212'
+    }
+    if (!props.state.isBlockDetailHidden && props.state.isTransactionDetailHidden) {
+      return '292 / 150'
+    }
+    return '292 / 240'
+  }};
+  } */
 `
 const ContentWrapper = styled.div<PropType>`
   display: grid;
@@ -339,7 +357,7 @@ const ContentWrapper = styled.div<PropType>`
   left: 50%;
   transform: translate(-50%, -50%);
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     position: absolute;
     grid-template-columns: 100%;
     grid-template-rows: none;
@@ -365,7 +383,7 @@ const TxHashContainer = styled.div`
 
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     grid-row: 1;
     grid-column: 1 / span 1;
 
@@ -379,7 +397,7 @@ const TxHashLabel = styled.div`
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
   //font-size: 12px;
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     width: 17.79%;
   }
 `
@@ -389,7 +407,7 @@ const TxHash = styled.div`
   color: ${(props) => props.theme.colors.infoTextColor};
   font-weight: 400;
   //font-size: 12px;
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     width: 60.49%;
   }
 `
@@ -404,7 +422,7 @@ const BalanceTransferContainer = styled.div<PropType>`
 
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     position: relative;
     grid-row: 3;
     grid-column: 1 / span 1;
@@ -421,7 +439,7 @@ const BalanceTransferLabel = styled.div`
   color: ${(props) => props.theme.colors.lightBlack};
   font-weight: 700;
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     margin-left: 5%;
   }
 `
@@ -462,7 +480,7 @@ const AdditionalInfoContainer = styled.div<PropType>`
   grid-row: 2;
   grid-column: 1;
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     position: relative;
     /* flex-direction: column-reverse;
     justify-content: space-between; */
@@ -484,7 +502,7 @@ const HorizontalStripContainer = styled.div<PropType>`
 
   height: 67.045%;
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     display: ${(props) => (props.state.isBlockDetailHidden ? 'none' : 'grid')};
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
@@ -511,7 +529,7 @@ const HorizontalStrip = styled.div`
   border-radius: 5px;
   background-color: ${(props) => props.theme.cards.textContainerBackgroundColor};
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     aspect-ratio: 134 / 40;
   }
 `
@@ -536,7 +554,7 @@ const MiniCardContainer = styled.div<PropType>`
   grid-template-columns: 1fr 1fr;
   column-gap: 2.67%;
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     position: relative;
     grid-row: 4;
     column-gap: 4px;
@@ -600,7 +618,7 @@ const UserDP = styled.div`
   border-radius: 50%;
   overflow: hidden;
 
-  @media (max-aspect-ratio: 0.75) {
+  ${TransactionContainer}.mobile-ui-mode & {
     margin-left: 21%;
   }
 `
@@ -639,6 +657,11 @@ export const Transaction: React.FC<Props> = (props) => {
     update_at: updateAt,
   } = data
   const [state, setState] = useState<StateType>({
+    isMobileDevice:
+      window.navigator.userAgent.match(/Android/i) != null ||
+      window.navigator.userAgent.match(/iPhone/i) != null ||
+      window.navigator.userAgent.match(/iPad/i) != null ||
+      window.navigator.userAgent.match(/Windows Phone/i) != null,
     isBlockDetailHidden: false,
     isTransactionDetailHidden: type === 'Inherent',
   })
@@ -677,8 +700,10 @@ export const Transaction: React.FC<Props> = (props) => {
 
   // console.log('receiver broken uid')
   // console.log(receiverBrokenUid)
-  console.log('type = ' + type)
-  console.log(type === 'Inherent')
+  // console.log('type = ' + type)
+  // console.log(type === 'Inherent')
+
+  console.log(state.isMobileDevice)
 
   const onDetailToggleBtnClicked = () => {
     console.log('CLicked it')
@@ -697,7 +722,11 @@ export const Transaction: React.FC<Props> = (props) => {
   }
 
   return (
-    <TransactionContainer className={isFinalized ? 'justRemoved' : 'inMempool'} state={state}>
+    <TransactionContainer
+      className={`${isFinalized ? 'justRemoved' : 'inMempool'} 
+                                      ${state.isMobileDevice ? 'mobile-ui-mode' : ''}`}
+      state={state}
+    >
       <ContentWrapper state={state}>
         <TxHashContainer>
           <TxHashLabel>Tx Hash:</TxHashLabel> <TxHash>{txHashToBeDisplayed}</TxHash>
