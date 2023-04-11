@@ -2,7 +2,7 @@
  * Module dependencies
  */
 const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { BN , formatBalance} = require('@polkadot/util');
+const { formatBalance } = require('@polkadot/util');
 
 const { DEVELOPMENT, FETCH_PENDING_EXTRINSICS_DELAY } = require('../../env');
 const {
@@ -141,7 +141,6 @@ class PolkadotService {
    * @param {*} networkId
    */
   static async resetWatchPendingExtrinsics(networkId) {
-
     PolkadotService.unSubscribeWatchers(networkId);
     await PolkadotService.updateCachedEventsAndExtrinsicsInfo(networkId);
     return PolkadotService.watchPendingExtrinsics(networkId);
@@ -176,11 +175,17 @@ class PolkadotService {
         if (api) {
           // Wait until we are ready and connected
           await api.isReady;
-          logger.info(`watchPendingExtrinsics api: ${JSON.stringify(api.rpc.author.trackExtrinsic)}`);
+          logger.info(
+            `watchPendingExtrinsics api: ${JSON.stringify(
+              api.rpc.author.trackExtrinsic
+            )}`
+          );
 
-          const tokenSymbol = await CacheService.getCachedTokenSymbol(networkId);
+          const tokenSymbol = await CacheService.getCachedTokenSymbol(
+            networkId
+          );
 
-          //update extrinsics info in cache
+          // update extrinsics info in cache
           await PolkadotService.updateCachedEventsAndExtrinsicsInfo(networkId);
 
           const unsub = setInterval(async () => {
@@ -198,8 +203,8 @@ class PolkadotService {
                   const nonce = parseInt(extrinsic.nonce.toString(), 10);
                   const tip = parseFloat(extrinsic.tip.toString());
                   let to = null;
-                  let value = 0;
-                  let symbol = tokenSymbol;
+                  const value = 0;
+                  const symbol = tokenSymbol;
                   let era = { isMortal: false };
 
                   extrinsic.args.forEach((arg) => {
@@ -274,7 +279,7 @@ class PolkadotService {
    * @param {*} from
    * @param {*} nonce
    */
-  //OLD: remove track extrinsic custom RPC
+  // OLD: remove track extrinsic custom RPC
   static async trackExtrinsic(networkId, hash, from, nonce) {
     const api = await PolkadotService.connect(networkId);
     const extrinsic = await CacheService.getCachedExtrinsic(
@@ -314,7 +319,6 @@ class PolkadotService {
             success: !isInvalid, // The transaction is valid in the current state.
             dropped: isDropped, // The transaction has been dropped from the pool,
           };
-
 
           logger.info(`trackExtrinsic: ${JSON.toString(data)}`);
 
@@ -378,7 +382,7 @@ class PolkadotService {
   /**
    * method to update extrinsic events/info in cache as method,section and transactional data info
    * https://polkadot.js.org/docs/api/cookbook/blocks
-   * 
+   *
    * @param {*} networkId
    * @param {*} hash
    * @param {*} from
@@ -398,8 +402,8 @@ class PolkadotService {
           /**
            * Query subscriptions
            * https://polkadot.js.org/docs/api/start/api.query.subs
-           * 
-           **/
+           *
+           * */
           const unsub = await api.rpc.chain.subscribeNewHeads(
             async (header) => {
               const pendingExtrinsicHashes = await CacheService.getCachedPendingExtrinsicHashes(
@@ -409,7 +413,7 @@ class PolkadotService {
               /**
                * filter extrinsics and its events
                * https://polkadot.js.org/docs/api/cookbook/blocks
-               * 
+               *
                */
               const blockHash = await api.rpc.chain.getBlockHash(header.number);
               const { block } = await api.rpc.chain.getBlock(blockHash);
@@ -453,19 +457,40 @@ class PolkadotService {
                         data.success = false;
                         data.finalized = true;
                       }
-                      //event for normal fund transfer and staking 
-                      if ((event.method === 'Transfer') || (event.method === 'Bonded' && event.section === 'staking')) {
-                        if (event.data.hasOwnProperty('amount')) {
-                          const amount = event.data.amount;
-                          data.toUnitAmount = formatBalance(amount, {withUnit:unit,decimals:chainDecimals });
-                          logger.info(`amount:::::::::: ${data.toUnitAmount}`);
+                      // event for normal fund transfer and staking
+                      if (
+                        event.method === 'Transfer' ||
+                        (event.method === 'Bonded' &&
+                          event.section === 'staking')
+                      ) {
+                        if (
+                          Object.prototype.hasOwnProperty.call(
+                            event.data,
+                            'amount'
+                          )
+                        ) {
+                          const { amount } = event.data;
+                          data.toUnitAmount = formatBalance(amount, {
+                            withUnit: unit,
+                            decimals: chainDecimals,
+                          });
                         }
-                      //event for treasury deposit
-                      } else if (event.method === 'Deposit' && event.section === 'treasury') {
-                        if (event.data.hasOwnProperty('value')) {
-                          const value = event.data.value;
-                          data.toUnitAmount = formatBalance(value, {withUnit:unit,decimals:chainDecimals });
-                          logger.info(`amount:::::::::: ${data.toUnitAmount}`);
+                        // event for treasury deposit
+                      } else if (
+                        event.method === 'Deposit' &&
+                        event.section === 'treasury'
+                      ) {
+                        if (
+                          Object.prototype.hasOwnProperty.call(
+                            event.data,
+                            'value'
+                          )
+                        ) {
+                          const { value } = event.data;
+                          data.toUnitAmount = formatBalance(value, {
+                            withUnit: unit,
+                            decimals: chainDecimals,
+                          });
                         }
                       }
                       return {

@@ -18,15 +18,14 @@ const lruCache = lru();
 const lock = localLock();
 
 class CacheService {
-
-   /**
-    * gets initiated during server startup and updates data in lru-cache returned from
-    * api.rpc.author.pendingExtrinsics
-    * 
-    * 
-    * @param {*} data 
-    * @returns 
-    */
+  /**
+   * gets initiated during server startup and updates data in lru-cache returned from
+   * api.rpc.author.pendingExtrinsics
+   *
+   *
+   * @param {*} data
+   * @returns
+   */
   static async updateCachedExtrinsics(data = {}) {
     const { hash, from, nonce, networkId } = data;
 
@@ -35,7 +34,9 @@ class CacheService {
 
     try {
       if (!extrinsicKeys) {
-        extrinsicKeys = await CacheService.getCachedNetworkExtrinsicKeys(networkId);
+        extrinsicKeys = await CacheService.getCachedNetworkExtrinsicKeys(
+          networkId
+        );
         extrinsicKeys.reverse();
       }
 
@@ -67,8 +68,10 @@ class CacheService {
 
         extrinsicKeys.push(extrinsicKey);
       }
-      //print data with json format
-      logger.info("data --------------------------------->" + JSON.stringify(data));
+      // print data with json format
+      logger.info(
+        `data --------------------------------->${JSON.stringify(data)}`
+      );
 
       // Update cache with data
       extrinsic.buildFrom(data);
@@ -94,7 +97,9 @@ class CacheService {
   }
 
   static async getCachedExtrinsics(networkId) {
-    const cachedExtrinsicKeys = await CacheService.getCachedNetworkExtrinsicKeys(networkId);
+    const cachedExtrinsicKeys = await CacheService.getCachedNetworkExtrinsicKeys(
+      networkId
+    );
 
     if (cachedExtrinsicKeys.length > 0) {
       const expiredExtrinsicKeys = [];
@@ -112,7 +117,6 @@ class CacheService {
 
       // Remove the least-recently-used extrinsic from network
       // In some cases the extrinsic can expire and still be present on the network cache.
-      //TODO: analyze below statement
       if (expiredExtrinsicKeys.length > 0) {
         expiredExtrinsicKeys.forEach((expireExtrinsicKey) => {
           const index = cachedExtrinsicKeys.indexOf(expireExtrinsicKey);
@@ -123,7 +127,10 @@ class CacheService {
         });
 
         // Update extrinsicCachedKeys
-        await CacheService.cacheNetworkExtrinsicKeys(networkId, cachedExtrinsicKeys);
+        await CacheService.cacheNetworkExtrinsicKeys(
+          networkId,
+          cachedExtrinsicKeys
+        );
       }
 
       return extrinsics.sort((a, b) => {
@@ -157,12 +164,12 @@ class CacheService {
    * set lru-cache
    * key -> extrinsicKey
    * value -> data
-   * 
-   * @param {*} hash 
-   * @param {*} from 
-   * @param {*} nonce 
-   * @param {*} networkId 
-   * @param {*} data 
+   *
+   * @param {*} hash
+   * @param {*} from
+   * @param {*} nonce
+   * @param {*} networkId
+   * @param {*} data
    */
   static async cacheExtrinsic(hash, from, nonce, networkId, data) {
     const extrinsicKey = CacheService.generateExtrinsicKey(
@@ -176,7 +183,6 @@ class CacheService {
   }
 
   static async cacheNetworkExtrinsicKeys(networkId, data) {
-
     const networkKey = CacheService.generateNetworkKey(networkId);
     lruCache.set(networkKey, JSON.stringify(data));
   }
@@ -207,15 +213,15 @@ class CacheService {
   }
 
   /**
-   * extrinsicKey is formed with a combination of 
-   * hash, from, nonce and networkId 
+   * extrinsicKey is formed with a combination of
+   * hash, from, nonce and networkId
    * in order to save an extrinsic data
-   * 
-   * @param {*} networkId 
-   * @param {*} hash 
-   * @param {*} from 
-   * @param {*} nonce 
-   * @returns 
+   *
+   * @param {*} networkId
+   * @param {*} hash
+   * @param {*} from
+   * @param {*} nonce
+   * @returns
    */
   static generateExtrinsicKey(networkId, hash, from, nonce) {
     if (!hash || !from || !Number.isInteger(nonce) || !networkId) {
@@ -224,7 +230,6 @@ class CacheService {
       );
     }
 
-    //TODO: why hash,nonce,key
     return `${CacheService.generateNetworkKey(
       networkId
     )}.extrinsic.hash-${hash}.from-${from}.nonce-${nonce}.key`;

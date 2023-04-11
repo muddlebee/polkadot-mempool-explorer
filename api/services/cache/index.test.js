@@ -7,7 +7,6 @@ const loggerMock = require('./mocks/logger.mock');
 const pendingExtrinsicsRawData = require('./mocks/pending-extrinsics.json');
 const pendingExtrinsicRawData = require('./mocks/pending-extrinsic.json');
 
-//TODO: fix test cases
 describe('CacheService', () => {
   const dotTokenSymbol = 'DOT';
   const networkId = 'test-netwotk-id';
@@ -249,7 +248,10 @@ describe('CacheService', () => {
       'invalid-extrinsic-key-2',
     ];
 
-    await CacheService.cacheNetworkExtrinsicKeys(networkId, invalidExtrinsicKeys);
+    await CacheService.cacheNetworkExtrinsicKeys(
+      networkId,
+      invalidExtrinsicKeys
+    );
     const extrinsics = await CacheService.getCachedExtrinsics(networkId);
 
     expect(extrinsics).to.be.an('array');
@@ -259,7 +261,9 @@ describe('CacheService', () => {
   });
 
   it('should returns an empty extrinsic list by networkId', async () => {
-    const extrinsics = await CacheService.getCachedExtrinsics(`empty-${networkId}`);
+    const extrinsics = await CacheService.getCachedExtrinsics(
+      `empty-${networkId}`
+    );
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.be.empty;

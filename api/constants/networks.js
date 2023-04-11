@@ -68,7 +68,7 @@ const DEV_NETWORKS = [
 ];
 
 const CUSTOM_NETWORKS = [
-/*   {
+  /*   {
     id: 'polkadot-custom',
     name: 'Polkadot Custom',
     url: 'ws://polkadot-polkadot-custom-node:9944',

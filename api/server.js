@@ -4,6 +4,7 @@
 const http = require('http');
 const express = require('express');
 const pinoHttp = require('pino-http');
+const cors = require('cors');
 const { API_BASE_PATH, PORT } = require('./env');
 const routes = require('./routes');
 const logger = require('./logger');
@@ -11,8 +12,8 @@ const PolkadotService = require('./services/polkadot');
 
 const app = express();
 const appLogger = pinoHttp({ logger });
-const cors = require('cors');
-app.use(cors())
+
+app.use(cors());
 app.use(appLogger);
 app.use(API_BASE_PATH, routes);
 
@@ -22,12 +23,11 @@ app.use(API_BASE_PATH, routes);
 http.createServer(app).listen(PORT, () => {
   logger.info(`App listening on port http://localhost:${PORT}/`);
 
+  /**
+   *  initiate the api.rpc.author.pendingExtrinsics API and put into lru-cache
+   */
 
-/**  
- *  initiate the api.rpc.author.pendingExtrinsics API and put into lru-cache
- */ 
-
-PolkadotService.initWatchers()
+  PolkadotService.initWatchers()
     .then(() => {
       logger.info('All watchers started');
     })
