@@ -499,11 +499,6 @@ class PolkadotService {
   }
 }
 
-function toUnit(balance, decimals) {
-  const base = new BN(10).pow(new BN(decimals));
-  const dm = new BN(balance).divmod(base);
-  return parseFloat(dm.div.toString() + "." + dm.mod.toString())
-}
 /**
  * Expose PolkadotService
  */

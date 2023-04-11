@@ -127,14 +127,14 @@ describe('CacheService', () => {
     // set symbol token in the cache
     lru.set(CacheService.getTokenSymbolKey(networkId), dotTokenSymbol);
 
-    const tokenSymbol = await CacheService.getTokenSymbol(networkId);
+    const tokenSymbol = await CacheService.getCachedTokenSymbol(networkId);
 
     expect(tokenSymbol).to.equal(dotTokenSymbol);
     expect(lru.get.calledOnce).to.be.true;
   });
 
   it('should set a token symbol in the cache', async () => {
-    await CacheService.setTokenSymbol(networkId, dotTokenSymbol);
+    await CacheService.cacheTokenSymbol(networkId, dotTokenSymbol);
 
     const cacheValue = lru.get(CacheService.getTokenSymbolKey(networkId));
 
@@ -143,7 +143,7 @@ describe('CacheService', () => {
   });
 
   it('should return a valid pending extrinsic hashes', async () => {
-    const pendingExtrinsicHashes = await CacheService.getPendingExtrinsicHashes(
+    const pendingExtrinsicHashes = await CacheService.getCachedPendingExtrinsicHashes(
       networkId
     );
     const expectedPendingExtrinsics = pendingExtrinsicsRawData.map(
@@ -159,7 +159,7 @@ describe('CacheService', () => {
   it('should set an extrinsic keys in the cache', async () => {
     const extrinsicKeys = ['extrinsic-key-1', 'extrinsic-key-2'];
 
-    await CacheService.setNetworkExtrinsicKeys(networkId, extrinsicKeys);
+    await CacheService.cacheNetworkExtrinsicKeys(networkId, extrinsicKeys);
 
     const cacheValue = JSON.parse(
       lru.get(CacheService.generateNetworkKey(networkId))
@@ -171,7 +171,7 @@ describe('CacheService', () => {
 
   it('should set an extrinsic in the cache', async () => {
     const { hash, from, nonce } = pendingExtrinsicRawData;
-    await CacheService.setExtrinsic(
+    await CacheService.cacheExtrinsic(
       hash,
       from,
       nonce,
@@ -190,7 +190,7 @@ describe('CacheService', () => {
   });
 
   it('should return a valid network extrinsic keys', async () => {
-    const networkExtrinsicKeys = await CacheService.getNetworkExtrinsicKeys(
+    const networkExtrinsicKeys = await CacheService.getCachedNetworkExtrinsicKeys(
       networkId
     );
     const expectedNetworkExtrinsicKeys = pendingExtrinsicsRawData.map(
@@ -211,7 +211,7 @@ describe('CacheService', () => {
 
   it('should return a valid extrinsic', async () => {
     const promises = pendingExtrinsicsRawData.map((extrinsic) =>
-      CacheService.getExtrinsic(
+      CacheService.getCachedExtrinsic(
         extrinsic.hash,
         extrinsic.from,
         extrinsic.nonce,
@@ -234,7 +234,7 @@ describe('CacheService', () => {
         return 0;
       }
     );
-    const extrinsics = await CacheService.getExtrinsicsInfo(networkId);
+    const extrinsics = await CacheService.getCachedExtrinsics(networkId);
 
     expect(extrinsics)
       .to.be.an('array')
@@ -249,8 +249,8 @@ describe('CacheService', () => {
       'invalid-extrinsic-key-2',
     ];
 
-    await CacheService.setNetworkExtrinsicKeys(networkId, invalidExtrinsicKeys);
-    const extrinsics = await CacheService.getExtrinsicsInfo(networkId);
+    await CacheService.cacheNetworkExtrinsicKeys(networkId, invalidExtrinsicKeys);
+    const extrinsics = await CacheService.getCachedExtrinsics(networkId);
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.be.empty;
@@ -259,7 +259,7 @@ describe('CacheService', () => {
   });
 
   it('should returns an empty extrinsic list by networkId', async () => {
-    const extrinsics = await CacheService.getExtrinsicsInfo(`empty-${networkId}`);
+    const extrinsics = await CacheService.getCachedExtrinsics(`empty-${networkId}`);
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.be.empty;
@@ -270,13 +270,13 @@ describe('CacheService', () => {
     // reset the lru cache before store the pending extrinsics
     resetCache();
 
-    let extrinsics = await CacheService.getExtrinsicsInfo(networkId);
+    let extrinsics = await CacheService.getCachedExtrinsics(networkId);
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.be.empty;
 
     const promises = pendingExtrinsicsRawData.map((extrinsic) =>
-      CacheService.upsertExtrinsic({
+      CacheService.updateCachedExtrinsics({
         networkId,
         hash: extrinsic.hash,
         from: extrinsic.from,
@@ -299,7 +299,7 @@ describe('CacheService', () => {
 
     await Promise.all(promises);
 
-    extrinsics = await CacheService.getExtrinsicsInfo(networkId);
+    extrinsics = await CacheService.getCachedExtrinsics(networkId);
 
     expect(extrinsics).to.be.an('array');
     expect(extrinsics).to.have.lengthOf(pendingExtrinsicsRawDataLength);
