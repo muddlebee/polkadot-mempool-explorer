@@ -2,7 +2,6 @@
  * Module dependencies
  */
 const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { formatBalance } = require('@polkadot/util');
 const { BN } = require('@polkadot/util');
 
 const { DEVELOPMENT, FETCH_PENDING_EXTRINSICS_DELAY } = require('../../env');
@@ -419,7 +418,7 @@ class PolkadotService {
               const { block } = await api.rpc.chain.getBlock(blockHash);
               const blockEvents = await api.query.system.events.at(header.hash);
               const chainDecimals = await api.registry.chainDecimals[0];
-              const unit = await api.registry.chainTokens[0];
+              const token = await api.registry.chainTokens[0];
 
               const rows = [];
 
@@ -457,53 +456,76 @@ class PolkadotService {
                         data.success = false;
                         data.finalized = true;
                       }
-                      // event for normal fund transfer and staking
-                   
-                      if (( event.section === 'Transfer' && event.method === 'balances') || 
-                        (event.method === 'Bonded' &&
-                          event.section === 'staking')
-                      ) {
-                        if (
-                          Object.prototype.hasOwnProperty.call(
-                            event.data,
-                            'amount'
-                          )
-                        ) {
-                          const { amount } = event.data;
-                          /* data.toUnitAmount = formatBalance(amount, {
-                            withUnit: unit,
-                            decimals: chainDecimals,
-                          }); */
-                          data.toUnitAmount = JSON.stringify(toUnit(amount, chainDecimals));
-                          logger.info('################################################################################');
-                          logger.info('data.toUnitAmount  -- ' +  data.toUnitAmount);
-                        }
-                        // event for treasury deposit
-                      } else if (
-                        event.method === 'Deposit' &&
-                        event.section === 'treasury'
-                      ) {
-                        if (
-                          Object.prototype.hasOwnProperty.call(
-                            event.data,
-                            'value'
-                          )
-                        ) {
-                          const { value } = event.data;
-                          /* data.toUnitAmount = formatBalance(value, {
-                            withUnit: unit,
-                            decimals: chainDecimals,
-                          }); */
-                          data.toUnitAmount = JSON.stringify(toUnit(value, chainDecimals));
-                          logger.info('################################################################################');
-                          logger.info('data.toUnitAmount  -- ' +  data.toUnitAmount);
-                        }
-                      }
+
                       return {
                         method: event.section.toString(),
                         section: event.method.toString(),
-                        data: event.data.toHuman()                      };
+                        data: event.data,
+                      };
                     });
+
+                  data.toUnitAmount = '';
+
+                  // iterate data.events and match condition based on method and section and then update data.toUnitAmount and exit the loop
+                  for (let i = 0; i < data.events.length; i += 1) {
+                    const event = data.events[i];
+
+                    if (
+                      (event.section === 'Transfer' &&
+                        event.method === 'balances') ||
+                      (event.method === 'Bonded' && event.section === 'staking')
+                    ) {
+                      if (
+                        Object.prototype.hasOwnProperty.call(
+                          event.data,
+                          'amount'
+                        )
+                      ) {
+                        const { amount } = event.data;
+                        /* data.toUnitAmount = formatBalance(amount, {
+                          withUnit: unit,
+                          decimals: chainDecimals,
+                        }); */
+                        data.toUnitAmount = toUnit(
+                          amount,
+                          chainDecimals,
+                          token
+                        );
+                        logger.info(
+                          '################################################################################'
+                        );
+                        logger.info(
+                          `data.toUnitAmount  -- ${data.toUnitAmount}`
+                        );
+                        break;
+                      }
+                      // event for treasury deposit
+                    } else if (
+                      event.method === 'treasury' &&
+                      event.section === 'Deposit'
+                    ) {
+                      if (
+                        Object.prototype.hasOwnProperty.call(
+                          event.data,
+                          'value'
+                        )
+                      ) {
+                        const { value } = event.data;
+                        /* data.toUnitAmount = formatBalance(value, {
+                          withUnit: unit,
+                          decimals: chainDecimals,
+                        }); */
+                        data.toUnitAmount = toUnit(value, chainDecimals, token);
+                        logger.info(
+                          '################################################################################'
+                        );
+                        logger.info(
+                          `data.toUnitAmount  -- ${data.toUnitAmount}`
+                        );
+                        break;
+                      }
+                    }
+                  }
 
                   rows.push(data);
                 }
@@ -529,10 +551,15 @@ class PolkadotService {
   }
 }
 
-function toUnit(balance, decimals) {
+function toUnit(balance, decimals, token) {
   const base = new BN(10).pow(new BN(decimals));
   const dm = new BN(balance).divmod(base);
-  return parseFloat(dm.div.toString() + "." + dm.mod.toString())
+  return `${parseFloat(
+    `${dm.div.toString()}.${dm.mod
+      .toString()
+      .padStart(decimals, '0')
+      .slice(0, 2)}`
+  )} ${token}`;
 }
 /**
  * Expose PolkadotService
