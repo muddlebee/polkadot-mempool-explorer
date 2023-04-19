@@ -63,7 +63,7 @@ class CacheService {
           // Remove last element from cache
           // pop() method removes the last element from an array and returns that element.
 
-          lruCache.delete(extrinsicKeys.pop());
+          lruCache.del(extrinsicKeys.pop());
         }
 
         extrinsicKeys.push(extrinsicKey);

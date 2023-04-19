@@ -3,6 +3,7 @@
  */
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { formatBalance } = require('@polkadot/util');
+const { BN } = require('@polkadot/util');
 
 const { DEVELOPMENT, FETCH_PENDING_EXTRINSICS_DELAY } = require('../../env');
 const {
@@ -206,7 +207,6 @@ class PolkadotService {
                   const value = 0;
                   const symbol = tokenSymbol;
                   let era = { isMortal: false };
-
                   extrinsic.args.forEach((arg) => {
                     if (arg.toRawType().includes('AccountId')) {
                       to = arg.toString();
@@ -458,8 +458,8 @@ class PolkadotService {
                         data.finalized = true;
                       }
                       // event for normal fund transfer and staking
-                      if (
-                        event.method === 'Transfer' ||
+                   
+                      if (( event.section === 'Transfer' && event.method === 'balances') || 
                         (event.method === 'Bonded' &&
                           event.section === 'staking')
                       ) {
@@ -470,10 +470,13 @@ class PolkadotService {
                           )
                         ) {
                           const { amount } = event.data;
-                          data.toUnitAmount = formatBalance(amount, {
+                          /* data.toUnitAmount = formatBalance(amount, {
                             withUnit: unit,
                             decimals: chainDecimals,
-                          });
+                          }); */
+                          data.toUnitAmount = JSON.stringify(toUnit(amount, chainDecimals));
+                          logger.info('################################################################################');
+                          logger.info('data.toUnitAmount  -- ' +  data.toUnitAmount);
                         }
                         // event for treasury deposit
                       } else if (
@@ -487,17 +490,19 @@ class PolkadotService {
                           )
                         ) {
                           const { value } = event.data;
-                          data.toUnitAmount = formatBalance(value, {
+                          /* data.toUnitAmount = formatBalance(value, {
                             withUnit: unit,
                             decimals: chainDecimals,
-                          });
+                          }); */
+                          data.toUnitAmount = JSON.stringify(toUnit(value, chainDecimals));
+                          logger.info('################################################################################');
+                          logger.info('data.toUnitAmount  -- ' +  data.toUnitAmount);
                         }
                       }
                       return {
                         method: event.section.toString(),
                         section: event.method.toString(),
-                        data: event.data.toHuman(),
-                      };
+                        data: event.data.toHuman()                      };
                     });
 
                   rows.push(data);
@@ -524,6 +529,11 @@ class PolkadotService {
   }
 }
 
+function toUnit(balance, decimals) {
+  const base = new BN(10).pow(new BN(decimals));
+  const dm = new BN(balance).divmod(base);
+  return parseFloat(dm.div.toString() + "." + dm.mod.toString())
+}
 /**
  * Expose PolkadotService
  */
