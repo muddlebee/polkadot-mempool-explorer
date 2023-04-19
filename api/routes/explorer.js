@@ -51,43 +51,71 @@ router.get('/transactions/:networkId', async (req, res) => {
     const networkId = req.params.networkId || '';
 
     const extrinsics = await CacheService.getCachedExtrinsics(networkId);
-    const response = extrinsics.map((extrinsic) => {
-      let type = '';
-
-      if (extrinsic.from !== '' && extrinsic.to !== '' && extrinsic.isSigned) {
-        // Signed transactions contain a signature of the account that issued the transaction
-        // and stands to pay a fee to have the transaction included on chain
-        type = SIGNED_TRANSACTION;
-      } else if (
-        extrinsic.from !== '' &&
-        extrinsic.to !== '' &&
-        !extrinsic.isSigned
-      ) {
-        // Since the transaction is not signed, there is nobody to pay a fee
-        type = UNSIGNED_TRANSACTION;
-      } else {
+    const response = extrinsics
+      .filter((extrinsic) => {
+        // filter out the extrinsics that are not signed and are not inherents
+        if (
+          extrinsic.from !== '' &&
+          extrinsic.to !== '' &&
+          extrinsic.isSigned
+        ) {
+          // Signed transactions contain a signature of the account that issued the transaction
+          // and stands to pay a fee to have the transaction included on chain
+          return true;
+        }
+        if (
+          extrinsic.from !== '' &&
+          extrinsic.to !== '' &&
+          !extrinsic.isSigned
+        ) {
+          // Since the transaction is not signed, there is nobody to pay a fee
+          return false;
+        }
         // Inherents are pieces of information that are not signed
         // and only inserted into a block by the block author.
-        type = INHERENT;
-      }
+        return false;
+      })
+      .map((extrinsic) => {
+        let type = '';
 
-      return {
-        hash: extrinsic.hash,
-        update_at: moment(extrinsic.updateAt).format(DATE_FORMAT),
-        create_at: moment(extrinsic.createAt).format(DATE_FORMAT),
-        block_number:
-          extrinsic.block.number !== 0 ? extrinsic.block.number : '',
-        type,
-        nonce: extrinsic.nonce,
-        tip: extrinsic.tip,
-        balance_transfer: extrinsic.toUnitAmount,
-        isValid: extrinsic.success,
-        isFinalized: extrinsic.finalized,
-        from: extrinsic.from,
-        to: extrinsic.to,
-        raw_value: extrinsic,
-      };
-    });
+        if (
+          extrinsic.from !== '' &&
+          extrinsic.to !== '' &&
+          extrinsic.isSigned
+        ) {
+          // Signed transactions contain a signature of the account that issued the transaction
+          // and stands to pay a fee to have the transaction included on chain
+          type = SIGNED_TRANSACTION;
+        } else if (
+          extrinsic.from !== '' &&
+          extrinsic.to !== '' &&
+          !extrinsic.isSigned
+        ) {
+          // Since the transaction is not signed, there is nobody to pay a fee
+          type = UNSIGNED_TRANSACTION;
+        } else {
+          // Inherents are pieces of information that are not signed
+          // and only inserted into a block by the block author.
+          type = INHERENT;
+        }
+
+        return {
+          hash: extrinsic.hash,
+          update_at: moment(extrinsic.updateAt).format(DATE_FORMAT),
+          create_at: moment(extrinsic.createAt).format(DATE_FORMAT),
+          block_number:
+            extrinsic.block.number !== 0 ? extrinsic.block.number : '',
+          type,
+          nonce: extrinsic.nonce,
+          tip: extrinsic.tip,
+          balance_transfer: extrinsic.toUnitAmount,
+          isValid: extrinsic.success,
+          isFinalized: extrinsic.finalized,
+          from: extrinsic.from,
+          to: extrinsic.to,
+          raw_value: extrinsic,
+        };
+      });
 
     res.status(200).send({
       items: response,

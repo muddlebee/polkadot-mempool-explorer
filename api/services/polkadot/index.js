@@ -473,7 +473,9 @@ class PolkadotService {
                     if (
                       (event.section === 'Transfer' &&
                         event.method === 'balances') ||
-                      (event.method === 'Bonded' && event.section === 'staking')
+                      (event.section === 'staking' &&
+                        (event.method === 'Bonded' ||
+                          event.method === 'Unbonded'))
                     ) {
                       if (
                         Object.prototype.hasOwnProperty.call(
