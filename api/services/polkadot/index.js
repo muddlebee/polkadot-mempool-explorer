@@ -401,7 +401,7 @@ class PolkadotService {
                     return {
                       method: event.section.toString(),
                       section: event.method.toString(),
-                      data: event.data,
+                      data: event.data.toHuman(),
                     };
                   });
                 rows.push(data);
