@@ -404,6 +404,11 @@ class PolkadotService {
                       data: event.data.toHuman(),
                     };
                   });
+
+                  //if data.to is empty, then make data.from as empty
+                  if(data.to === ''){
+                    data.from = '';
+                  }
                 rows.push(data);
 
               });
