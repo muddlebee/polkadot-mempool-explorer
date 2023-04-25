@@ -358,6 +358,17 @@ class PolkadotService {
                 if (pallet === 'balances' && methodName === 'transfer') {
                   const [destination, value] = method.args;
                   data.to = destination.toString();
+                  data.toUnitAmount = toUnit(
+                    value.toString(),
+                    chainDecimals,
+                    token
+                  );
+                  logger.info(
+                    '################################################################################'
+                  );
+                  logger.info(
+                    `data.toUnitAmount  -- ${data.toUnitAmount}`
+                  );
                   logger.info(`Sender: ${signer}, Receiver: ${destination}, Amount: ${value}`);
                 }
 
@@ -393,42 +404,6 @@ class PolkadotService {
                       data: event.data,
                     };
                   });
-
-                //TODO:improve this logic to get the amount
-                // iterate data.events and match condition based on method and section and then update data.toUnitAmount and exit the loop
-                for (let i = 0; i < data.events.length; i += 1) {
-                  const event = data.events[i];
-
-                  if (
-                    (event.section === 'Transfer' &&
-                      event.method === 'balances')
-                  ) {
-                    if (
-                      Object.prototype.hasOwnProperty.call(
-                        event.data,
-                        'amount'
-                      )
-                    ) {
-                      const { amount } = event.data;
-                      data.toUnitAmount = toUnit(
-                        amount,
-                        chainDecimals,
-                        token
-                      );
-                      logger.info(
-                        '################################################################################'
-                      );
-                      logger.info(
-                        `data.toUnitAmount  -- ${data.toUnitAmount}`
-                      );
-                      break;
-                    }
-                  }
-                }
-                if(data.to === ''){
-                  data.from = '';
-                  data.toUnitAmount = '';
-                }
                 rows.push(data);
 
               });
