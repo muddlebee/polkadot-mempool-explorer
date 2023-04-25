@@ -663,7 +663,7 @@ export const Transaction: React.FC<Props> = (props) => {
       window.navigator.userAgent.match(/iPad/i) != null ||
       window.navigator.userAgent.match(/Windows Phone/i) != null,
     isBlockDetailHidden: false,
-    isTransactionDetailHidden: from === '' || to === '',
+    isTransactionDetailHidden: from === '' || to === '' || balanceTransfer === '',
   })
   const { selectedNetwork } = useMempoolExplorer()
   const result = isValid ? 'Valid' : 'Invalid'
