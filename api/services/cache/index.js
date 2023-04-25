@@ -68,10 +68,6 @@ class CacheService {
 
         extrinsicKeys.push(extrinsicKey);
       }
-      // print data with json format
-      logger.info(
-        `data --------------------------------->${JSON.stringify(data)}`
-      );
 
       // Update cache with data
       extrinsic.buildFrom(data);
@@ -115,6 +111,7 @@ class CacheService {
         }
       });
 
+      //TODO: investigate
       // Remove the least-recently-used extrinsic from network
       // In some cases the extrinsic can expire and still be present on the network cache.
       if (expiredExtrinsicKeys.length > 0) {
@@ -126,6 +123,7 @@ class CacheService {
           }
         });
 
+        logger.info('############ expiredExtrinsicKeys ###############');
         // Update extrinsicCachedKeys
         await CacheService.cacheNetworkExtrinsicKeys(
           networkId,
@@ -178,11 +176,18 @@ class CacheService {
       from,
       nonce
     );
-
+    //print extrinsicKey and data
+    logger.info('#########################cacheExtrinsic#################################')
+    logger.info('extrinsicKey -----------------------------> ' + extrinsicKey);
+    logger.info('data -----------------------------> ' + JSON.stringify(data));
     lruCache.set(extrinsicKey, JSON.stringify(data));
   }
 
   static async cacheNetworkExtrinsicKeys(networkId, data) {
+    //print extrinsicKey and data
+    logger.info('#######################cacheNetworkExtrinsicKeys###################################')
+    logger.info('networkId -----------------------------> ' + networkId);
+    logger.info('data -----------------------------> ' + JSON.stringify(data));
     const networkKey = CacheService.generateNetworkKey(networkId);
     lruCache.set(networkKey, JSON.stringify(data));
   }
@@ -224,10 +229,17 @@ class CacheService {
    * @returns
    */
   static generateExtrinsicKey(networkId, hash, from, nonce) {
-    if (!hash || !from || !Number.isInteger(nonce) || !networkId) {
+    if (!hash || !Number.isInteger(nonce) || !networkId) {
       throw new Error(
         'You must provide a hash, from, nonce and networkId in order to save an extrinsic'
       );
+    }
+
+    //if from is null, return without ${from}
+    if (from === null) {
+      return `${CacheService.generateNetworkKey(
+        networkId
+      )}.extrinsic.hash-${hash}.nonce-${nonce}.key`;
     }
 
     return `${CacheService.generateNetworkKey(

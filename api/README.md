@@ -38,3 +38,22 @@ Running the unit tests.
  - `/networks`: Get networks [specs](https://github.com/protofire/polkadot-mempool-explorer/blob/main/api/routes/explorerApiDocumentation.js#L32-L65).
  - `/networks/:networkId/reset`: Reset the listener for a network id. [specs](https://github.com/protofire/polkadot-mempool-explorer/blob/main/api/routes/explorerApiDocumentation.js#L66-L95).
  - `/transactions/:networkId`: Get transactions by network id. [specs](https://github.com/protofire/polkadot-mempool-explorer/blob/main/api/routes/explorerApiDocumentation.js#L96-L133).
+
+
+ ---
+
+ ## Understand the code
+
+ `api\server.js` is the entry point of the application. It is responsible for starting the server and fetching the mempool or extrinsics from the network.
+
+ Refer the code below:
+
+ ```js
+  PolkadotService.initWatchers()
+    .then(() => {
+      logger.info('All watchers started');
+    })
+    .catch((err) => {
+      logger.error({ err }, 'Error trying to init watchers.');
+    });
+    ```

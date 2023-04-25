@@ -24,9 +24,9 @@ http.createServer(app).listen(PORT, () => {
   logger.info(`App listening on port http://localhost:${PORT}/`);
 
   /**
-   *  initiate the api.rpc.author.pendingExtrinsics API and put into lru-cache
+   *  Start fetching mempool or pending extrinsics from all networks
+   * 
    */
-
   PolkadotService.initWatchers()
     .then(() => {
       logger.info('All watchers started');

@@ -52,32 +52,9 @@ router.get('/transactions/:networkId', async (req, res) => {
 
     const extrinsics = await CacheService.getCachedExtrinsics(networkId);
     const response = extrinsics
-      .filter((extrinsic) => {
-        // filter out the extrinsics that are not signed and are not inherents
-        if (
-          extrinsic.from !== '' &&
-          extrinsic.to !== '' &&
-          extrinsic.isSigned
-        ) {
-          // Signed transactions contain a signature of the account that issued the transaction
-          // and stands to pay a fee to have the transaction included on chain
-          return true;
-        }
-        if (
-          extrinsic.from !== '' &&
-          extrinsic.to !== '' &&
-          !extrinsic.isSigned
-        ) {
-          // Since the transaction is not signed, there is nobody to pay a fee
-          return false;
-        }
-        // Inherents are pieces of information that are not signed
-        // and only inserted into a block by the block author.
-        return false;
-      })
       .map((extrinsic) => {
-        let type = '';
-
+      /*   let type = '';
+        extrinsic.type = '';
         if (
           extrinsic.from !== '' &&
           extrinsic.to !== '' &&
@@ -91,6 +68,7 @@ router.get('/transactions/:networkId', async (req, res) => {
           extrinsic.to !== '' &&
           !extrinsic.isSigned
         ) {
+          //TODO: This is a hack to get around the fact that the extrinsic.isSigned is not working
           // Since the transaction is not signed, there is nobody to pay a fee
           type = UNSIGNED_TRANSACTION;
         } else {
@@ -98,6 +76,14 @@ router.get('/transactions/:networkId', async (req, res) => {
           // and only inserted into a block by the block author.
           type = INHERENT;
         }
+         */
+        type = SIGNED_TRANSACTION;
+
+        logger.info(
+          '################################################################################'
+        );
+        logger.info('extrinsic.isSigned.after:::::::::::::   ' + extrinsic.isSigned);
+        logger.info('extrinsic.success.after:::::::::::::   ' + extrinsic.success);
 
         return {
           hash: extrinsic.hash,
@@ -116,6 +102,11 @@ router.get('/transactions/:networkId', async (req, res) => {
           raw_value: extrinsic,
         };
       });
+      // .filter(extrinsic => {
+      //   // filter out extrinsics that are UNSIGNED_TRANSACTION or INHERENT from the response
+      //   logger.info('extrinsic.type:::::::::::::   ' + extrinsic.type);
+      //   return (extrinsic.type !== UNSIGNED_TRANSACTION &&  extrinsic.type !== INHERENT);
+      // });
 
     res.status(200).send({
       items: response,
